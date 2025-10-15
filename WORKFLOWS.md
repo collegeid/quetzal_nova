@@ -16,14 +16,14 @@ Peran utama:
 
 ## 🏗️ **2. Struktur Modul Laravel**
 
-| Modul          | Deskripsi                                                          | Route Prefix  | Checklist |
-| -------------- | ------------------------------------------------------------------ | ------------- | --------- |
-| **Auth**       | Login, Logout, Register (jika perlu)                               | `/auth`       | ☐ Not Yet |
-| **User**       | Manajemen pengguna dan peran                                       | `/users`      | ☐ Not Yet |
-| **DataCacat**  | CRUD data kecacatan                                                | `/data-cacat` | ☐ Not Yet |
-| **Verifikasi** | Proses validasi data cacat                                         | `/verifikasi` | ☐ Not Yet |
-| **Laporan**    | Rekap data dan export PDF/Excel                                    | `/laporan`    | ☐ Not Yet |
-| **Dashboard**  | Statistik visual (grafik per shift, jenis cacat, mesin bermasalah) | `/dashboard`  | ☐ Not Yet |
+| Modul          | Deskripsi                                                          | Route Prefix  | Penanggung Jawab                                   | Checklist |
+| -------------- | ------------------------------------------------------------------ | ------------- | -------------------------------------------------- | --------- |
+| **Auth**       | Login, Logout, Register (inisiasi awal sistem & super admin setup) | `/auth`       | **Febriansah Dirgantara**                          | ☐ Not Yet |
+| **User**       | Manajemen pengguna dan peran                                       | `/users`      | **Rizal Maulana**                                  | ☐ Not Yet |
+| **DataCacat**  | CRUD data kecacatan                                                | `/data-cacat` | **Rifqii Fauzi Anwar**                             | ☐ Not Yet |
+| **Verifikasi** | Proses validasi data cacat                                         | `/verifikasi` | **Fajri Lukman**                                   | ☐ Not Yet |
+| **Laporan**    | Rekap data dan export PDF/Excel                                    | `/laporan`    | **Rizal Maulana** & **Fajri Lukman**               | ☐ Not Yet |
+| **Dashboard**  | Statistik visual (grafik per shift, jenis cacat, mesin bermasalah) | `/dashboard`  | **Febriansah Dirgantara** & **Rifqii Fauzi Anwar** | ☐ Not Yet |
 
 ---
 
