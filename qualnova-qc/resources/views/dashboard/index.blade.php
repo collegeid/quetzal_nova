@@ -83,7 +83,7 @@
 
             <!-- Footer -->
             <div class="text-center text-gray-400 text-sm pt-10">
-                © {{ date('Y') }} <span class="font-semibold text-indigo-600">Qual Nova QC System</span> — Developed by <span class="font-medium">Febriansah</span>
+                © {{ date('Y') }} <span class="font-semibold text-indigo-600">Qual Nova QC System</span> — Developed by <span class="font-medium">Quetzal Team's</span>
             </div>
         </div>
     </div>
