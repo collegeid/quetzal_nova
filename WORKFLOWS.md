@@ -18,13 +18,12 @@ Peran utama:
 
 | Modul          | Deskripsi                                                          | Route Prefix  | Penanggung Jawab                                   | Checklist |
 | -------------- | ------------------------------------------------------------------ | ------------- | -------------------------------------------------- | --------- |
-| **Auth**       | Login, Logout, Register (inisiasi awal sistem & super admin setup) | `/auth`       | **Febriansah Dirgantara**                          | ☐ Not Yet |
+| **Auth**       | Login, Logout,          (inisiasi awal sistem & super admin setup) | `/auth`       | **Febriansah Dirgantara**                          |    Done   |
 | **User**       | Manajemen pengguna dan peran                                       | `/users`      | **Rizal Maulana**                                  | ☐ Not Yet |
 | **DataCacat**  | CRUD data kecacatan                                                | `/data-cacat` | **Rifqii Fauzi Anwar**                             | ☐ Not Yet |
 | **Verifikasi** | Proses validasi data cacat                                         | `/verifikasi` | **Fajri Lukman**                                   | ☐ Not Yet |
 | **Laporan**    | Rekap data dan export PDF/Excel                                    | `/laporan`    | **Rizal Maulana** & **Fajri Lukman**               | ☐ Not Yet |
-| **Dashboard**  | Statistik visual (grafik per shift, jenis cacat, mesin bermasalah) | `/dashboard`  | **Febriansah Dirgantara** & **Rifqii Fauzi Anwar** | ☐ Not Yet |
-
+| **Dashboard**  | Statistik visual (grafik, jenis cacat, mesin bermasalah) | `/dashboard`  | **Febriansah Dirgantara** & **Rifqii Fauzi Anwar**           |    Done   |
 ---
 
 ## 🗂️ **3. Database Workflow (Dari ERD)**
