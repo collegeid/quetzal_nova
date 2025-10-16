@@ -1,11 +1,5 @@
 <x-app-layout>
-    <x-slot name="header">
-        <div class="flex justify-between items-center">
-            <p class="text-gray-500 text-sm text: align-center;">Halo, 
-                <span class="text-indigo-600 font-semibold">{{ $user->name }}</span> 👋
-            </p>
-        </div>
-    </x-slot>
+
 
     <div class="py-10 bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
         <div class="max-w-7xl mx-auto px-6 lg:px-8 space-y-8">
