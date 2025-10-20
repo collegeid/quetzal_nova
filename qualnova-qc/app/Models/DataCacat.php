@@ -23,6 +23,7 @@ class DataCacat extends Model
         'id_user',
         'id_jenis',
     ];
+    
 
     // 🔗 Relasi
     public function user()
@@ -39,4 +40,11 @@ class DataCacat extends Model
     {
         return $this->hasOne(Verifikasi::class, 'id_cacat');
     }
+
+    public function jenisCacat() {
+        return $this->belongsTo(JenisCacat::class, 'id_jenis', 'id_jenis');
+    }
+    
+   
+    
 }

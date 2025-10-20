@@ -3,77 +3,96 @@
 
     <div class="py-10 bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
         <div class="max-w-7xl mx-auto px-6 lg:px-8 space-y-8">
+      
+      
+        <div class="mb-4 flex items-center space-x-2">
+            <form method="GET" action="{{ route('laporan.download') }}">
+                <label for="month" class="mr-2 font-medium"> Periode:</label>
+                <select id="month" name="month" class="border rounded px-2 py-1">
+                    @foreach($bulanTersedia as $bulan)
+                        <option value="{{ $bulan }}" {{ request('month') == $bulan ? 'selected' : '' }}>
+                            {{ \Carbon\Carbon::parse($bulan.'-01')->format('F Y') }}
+                        </option>
+                    @endforeach
+                </select>
+                <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-1 rounded">
+                    Export PDF
+                </button>
+            </form>
+        </div>
 
-            <!-- Statistik Cards -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                @php
-                    $cards = [
-                        ['title'=>'Total Data Cacat','value'=>$totalCacat,'color'=>'from-blue-500 to-blue-600'],
-                        ['title'=>'Total Jenis Cacat','value'=>$totalJenis,'color'=>'from-green-500 to-emerald-600'],
-                        ['title'=>'Total User','value'=>$totalUser,'color'=>'from-indigo-500 to-purple-600'],
-                        ['title'=>'Verifikasi Valid','value'=>$verifikasiValid,'color'=>'from-yellow-400 to-amber-500 text-gray-900']
-                    ];
-                @endphp
-                @foreach ($cards as $card)
-                    <div class="bg-gradient-to-r {{ $card['color'] }} rounded-2xl text-white shadow-lg p-5 transform hover:scale-[1.03] transition">
-                        <p class="text-sm uppercase tracking-wide opacity-80">{{ $card['title'] }}</p>
-                        <h3 class="text-4xl font-bold mt-1">{{ $card['value'] }}</h3>
-                    </div>
-                @endforeach
-            </div>
 
-            <!-- Status & Info -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="bg-red-500 rounded-2xl p-6 shadow-md text-white hover:shadow-lg transition">
-                    <h4 class="text-lg font-semibold">Verifikasi Belum Valid</h4>
-                    <p class="text-3xl font-bold mt-2">{{ $verifikasiBelum }}</p>
+          <!-- Statistik Cards -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    @php
+                            $cards = [
+                            ['title'=>'Total Data Cacat','value'=>$totalCacat,'color'=>'from-blue-600 to-indigo-700 text-white'],
+                            ['title'=>'Total Jenis Cacat','value'=>$totalJenis,'color'=>'from-teal-500 to-green-600 text-white'],
+                            ['title'=>'Total User','value'=>$totalUser,'color'=>'from-gray-500 to-gray-700 text-white'],
+                            ['title'=>'Verifikasi Valid','value'=>$verifikasiValid,'color'=>'from-blue-400 to-blue-600 text-white'],
+                            ['title'=>'Verifikasi Belum Valid','value'=>$verifikasiBelum,'color'=>'from-red-500 to-red-700 text-white'],
+                            ['title'=>'Status Sistem','value'=>$statusSistem,'color'=>'from-amber-500 to-yellow-600 text-gray-900'],
+                            ['title'=>'Cacat Terbanyak','value'=>$jenisTerbanyak,'color'=>'from-purple-600 to-indigo-800 text-white'],
+                            ['title'=>'Mesin Bermasalah Terbaru','value'=>$mesinBermasalah,'color'=>'from-gray-700 to-gray-900 text-white']
+                        ];
+
+                    @endphp
+
+                    @foreach ($cards as $card)
+                        <div class="bg-gradient-to-r {{ $card['color'] }} rounded-2xl text-white shadow-lg p-5 transform hover:scale-[1.03] transition">
+                            <p class="text-sm uppercase tracking-wide opacity-80">{{ $card['title'] }}</p>
+                            <p class="text-1xl font-semibold mt-1">{{ $card['value'] }}</p>
+                        </div>
+                    @endforeach
+
                 </div>
-                <div class="bg-gradient-to-r from-teal-500 to-cyan-600 rounded-2xl p-6 shadow-md text-white hover:shadow-lg transition">
-                    <h4 class="text-lg font-semibold">Status Sistem</h4>
-                    <p class="text-xl mt-1">✅ Semua proses berjalan normal</p>
-                </div>
-            </div>
+
+
+      
 
             <!-- Chart Section -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-6">
                 <!-- Grafik Tren Produksi -->
                 <div class="bg-white rounded-2xl p-6 shadow-md border border-gray-100">
-                    <h4 class="text-lg font-semibold text-gray-800 mb-4">📈 Tren Data Cacat per Hari</h4>
-                    <canvas id="trendChart" height="150"></canvas>
-                </div>
+                    <div class="flex items-center gap-4 mb-4">
+                            <select id="rangeFilter" class="border border-gray-300 rounded-lg p-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400">
+                                <option value="day" selected>Per Hari</option>
+                                <option value="week">Per Minggu</option>
+                                <option value="month">Per Bulan</option>
+                                <option value="year">Per Tahun</option>
+                            </select>
 
-                <!-- Grafik Distribusi Jenis Cacat -->
-                <div class="bg-white rounded-2xl p-6 shadow-md border border-gray-100">
-                    <h4 class="text-lg font-semibold text-gray-800 mb-4">📊 Distribusi Jenis Cacat</h4>
-                    <canvas id="jenisChart" height="150"></canvas>
-                </div>
-            </div>
+                            <button id="filterBtn" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-4 py-2 rounded-lg shadow transition duration-200">
+                                Terapkan
+                            </button>
+                     </div>
+
+                        <h4 class="text-lg font-semibold text-gray-800 mb-4">📈 Tren Data Cacat</h4>
+                        <canvas id="trendChart" height="150"></canvas>
+                    </div>
+
+
+                    <!-- Grafik Distribusi Jenis Cacat -->
+                    <div class="bg-white rounded-2xl p-6 shadow-md border border-gray-100">
+                        <h4 class="text-lg font-semibold text-gray-800 mb-4">📊 Distribusi Jenis Cacat</h4>
+                        <canvas id="jenisChart" height="150"></canvas>
+                    </div>
+              </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-6">
                 <!-- Grafik Status Verifikasi -->
-                <div class="bg-white rounded-2xl p-6 shadow-md border border-gray-100">
-                    <h4 class="text-lg font-semibold text-gray-800 mb-4">🧾 Status Verifikasi</h4>
+                <div class="bg-white rounded-2xl p-6 shadow-md border border-gray-100" style="max-height: 400px; overflow-y: auto;">
+                <h4 class="text-lg font-semibold text-gray-800 mb-4">🧾 Status Verifikasi</h4>
                     <canvas id="verifikasiChart" height="150"></canvas>
                 </div>
 
-                <!-- Grafik Performa Mesin -->
-                <div class="bg-white rounded-2xl p-6 shadow-md border border-gray-100">
-                    <h4 class="text-lg font-semibold text-gray-800 mb-4">⚙️ Performa Mesin</h4>
-                    <canvas id="mesinChart" height="150"></canvas>
-                </div>
+             <!-- Grafik Top 5 Mesin Rusak -->
+             <div class="bg-white rounded-2xl p-6 shadow-md border border-gray-100" style="max-height: 400px; overflow-y: auto;">
+                <h4 class="text-lg font-semibold text-gray-800 mb-4">⚙️ Top Mesin Rusak</h4>
+                <canvas id="mesinChart"></canvas>
             </div>
+           
 
-            <!-- Informasi Tambahan -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-                <div class="bg-white rounded-2xl p-6 shadow-md border border-gray-100">
-                    <h5 class="text-gray-600 text-sm uppercase tracking-wide mb-2">Jenis Cacat Terbanyak</h5>
-                    <p class="text-2xl font-bold text-gray-800">{{ $jenisTerbanyak }}</p>
-                </div>
-                <div class="bg-white rounded-2xl p-6 shadow-md border border-gray-100">
-                    <h5 class="text-gray-600 text-sm uppercase tracking-wide mb-2">Mesin Bermasalah</h5>
-                    <p class="text-2xl font-bold text-gray-800">{{ $mesinBermasalah }}</p>
-                </div>
-            </div>
 
             <!-- Footer -->
             <div class="text-center text-gray-400 text-sm pt-10">
@@ -84,32 +103,53 @@
 
     <!-- Chart.js Scripts -->
     <script>
-        // 🔹 Chart 1: Tren Data Cacat per Hari
-        new Chart(document.getElementById('trendChart'), {
-            type: 'line',
-            data: {
-                labels: {!! json_encode($tanggalCacat) !!},
-                datasets: [{
-                    label: 'Jumlah Cacat',
-                    data: {!! json_encode($jumlahCacatPerHari) !!},
-                    borderColor: '#3B82F6',
-                    backgroundColor: 'rgba(59,130,246,0.2)',
-                    borderWidth: 2,
-                    fill: true,
-                    tension: 0.4,
-                    pointRadius: 4,
-                    pointBackgroundColor: '#1D4ED8'
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: { legend: { display: false }},
-                scales: {
-                    y: { beginAtZero: true, title: { display: true, text: 'Jumlah Cacat' }},
-                    x: { title: { display: true, text: 'Tanggal' }}
-                }
+   
+        // Chart 1: Trend Chart: Harian, Mingguan, Bulanan, Tahunan
+
+        const ctx = document.getElementById('trendChart').getContext('2d');
+            let trendChart;
+
+            async function loadTrendChart(range = 'day') {
+                const res = await fetch(`/dashboard/chart-trend?range=${range}`);
+                const json = await res.json();
+
+                if (trendChart) trendChart.destroy();
+
+                trendChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: json.labels,
+                        datasets: [{
+                            label: 'Jumlah Cacat',
+                            data: json.totals,
+                            borderColor: '#3B82F6',
+                            backgroundColor: 'rgba(59,130,246,0.2)',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 4,
+                            pointBackgroundColor: '#1D4ED8'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: { legend: { display: false }},
+                        scales: {
+                            y: { beginAtZero: true, title: { display: true, text: 'Jumlah Cacat' }},
+                            x: { title: { display: true, text: 'Periode' }}
+                        }
+                    }
+                });
             }
-        });
+
+            // initial load
+            loadTrendChart();
+
+            // filter button
+            document.getElementById('filterBtn').addEventListener('click', () => {
+                const range = document.getElementById('rangeFilter').value;
+                loadTrendChart(range);
+            });
 
         // 🔹 Chart 2: Distribusi Jenis Cacat
         new Chart(document.getElementById('jenisChart'), {
@@ -132,44 +172,110 @@
             }
         });
 
-        // 🔹 Chart 3: Status Verifikasi
-        new Chart(document.getElementById('verifikasiChart'), {
-            type: 'doughnut',
+     // 🔹 Chart 3: Status Verifikasi
+const ctxVerifikasi = document.getElementById('verifikasiChart').getContext('2d');
+
+        new Chart(ctxVerifikasi, {
+            type: 'bar', // ganti dari 'doughnut' ke 'bar'
             data: {
                 labels: ['Valid', 'Belum Valid'],
                 datasets: [{
+                    label: 'Jumlah Verifikasi',
                     data: [{{ $verifikasiValid }}, {{ $verifikasiBelum }}],
-                    backgroundColor: ['#22C55E', '#EF4444'],
-                    hoverOffset: 8
+                    backgroundColor: ['#22C55E', '#f5d742'],
+                    borderColor: ['#16A34A', '#D4B500'],
+                    borderWidth: 1
                 }]
             },
             options: {
-                plugins: {
-                    legend: { position: 'bottom' }
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Jumlah Data'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Status Verifikasi'
+                        }
+                    }
                 },
-                cutout: '65%'
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.parsed.y + ' data';
+                            }
+                        }
+                    }
+                }
             }
         });
 
-        // 🔹 Chart 4: Performa Mesin (Radar)
-        new Chart(document.getElementById('mesinChart'), {
-            type: 'radar',
+        const ctxMesin = document.getElementById('mesinChart').getContext('2d');
+
+            
+        new Chart(ctxMesin, {
+            type: 'bar',
             data: {
-                labels: {!! json_encode($namaMesin) !!},
+                labels: @json($namaMesin),
                 datasets: [{
-                    label: 'Tingkat Kinerja (%)',
-                    data: {!! json_encode($kinerjaMesin) !!},
-                    backgroundColor: 'rgba(16,185,129,0.2)',
-                    borderColor: '#10B981',
-                    borderWidth: 2,
-                    pointBackgroundColor: '#059669'
+                    label: 'Jumlah Cacat Valid',
+                    data: @json($jumlahCacatMesin),
+                    backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1,
+                    borderRadius: 5
                 }]
             },
             options: {
-                elements: { line: { tension: 0.3 }},
-                scales: { r: { beginAtZero: true, max: 100 }},
-                plugins: { legend: { display: false }}
+                indexAxis: 'y', // horizontal bar
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Jumlah Cacat Valid'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Mesin'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.parsed.x + ' cacat';
+                            }
+                        }
+                    }
+                }
             }
         });
+
+
+        function updateStatusSistem() {
+            fetch('/dashboard/status-sistem')
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('statusSistem').innerText = data.status;
+                });
+        }
+
+        // update tiap 5 detik
+        setInterval(updateStatusSistem, 500);
     </script>
 </x-app-layout>

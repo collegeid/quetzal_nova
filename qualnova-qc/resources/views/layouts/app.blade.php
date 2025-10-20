@@ -63,6 +63,78 @@
     if (localStorage.theme === 'dark') document.documentElement.classList.add('dark');
 </script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- Tambahkan CDN SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+    // === CREATE ===
+    const createForm = document.getElementById("createForm");
+    if (createForm) {
+        createForm.addEventListener("submit", function(e) {
+            e.preventDefault(); // stop submit otomatis
+            Swal.fire({
+                title: "Simpan Data?",
+                text: "Apakah data sudah sesuai?",
+                icon: "question",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Ya, Simpan!",
+                cancelButtonText: "Batal"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    createForm.submit();
+                }
+            });
+        });
+    }
+
+    // === EDIT ===
+    // kalau form edit ada banyak (1 per baris modal misalnya)
+    const editForms = document.querySelectorAll('form[id^="editForm"]');
+    editForms.forEach((form) => {
+        form.addEventListener("submit", function(e) {
+            e.preventDefault(); // stop submit otomatis
+            Swal.fire({
+                title: "Update Data?",
+                text: "Pastikan data sudah benar sebelum disimpan!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Ya, Update!",
+                cancelButtonText: "Batal"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+        });
+    });
+
+});
+</script>
+
+
+<script>
+function confirmDelete(id) {
+    Swal.fire({
+        title: 'Yakin ingin menghapus?',
+        text: "Data yang dihapus tidak bisa dikembalikan!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#dc2626',
+        cancelButtonColor: '#6b7280',
+        confirmButtonText: 'Ya, hapus!',
+        cancelButtonText: 'Batal'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            document.getElementById('deleteForm-' + id).submit();
+        }
+    });
+}
+</script>
     </body>
 </html>
