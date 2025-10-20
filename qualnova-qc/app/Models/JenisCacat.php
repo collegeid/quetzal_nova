@@ -11,15 +11,15 @@ class JenisCacat extends Model
 
     protected $table = 'jenis_cacat';
     protected $primaryKey = 'id_jenis';
+    public $timestamps = true;
 
     protected $fillable = [
         'nama_jenis',
     ];
 
-    // 🔗 Relasi
+    // 🔗 Relasi ke tabel data_cacat
     public function dataCacat()
     {
         return $this->hasMany(DataCacat::class, 'id_jenis');
     }
-    
 }

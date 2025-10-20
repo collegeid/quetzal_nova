@@ -5,24 +5,84 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16 items-center">
 
-          
-
             <!-- Center: Navigation Links -->
             <div class="hidden md:flex items-center space-x-6">
-                <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" class="flex items-center space-x-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-indigo-500" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7m-9 2v8m4-8v8" />
+
+                <!-- Dashboard -->
+                <x-nav-link :href="route('dashboard')" 
+                            :active="request()->routeIs('dashboard')" 
+                            class="flex items-center space-x-2 relative group transition-all duration-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" 
+                         class="h-4 w-4 text-indigo-500" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                              d="M3 12l2-2m0 0l7-7 7 7m-9 2v8m4-8v8" />
                     </svg>
                     <span>Dashboard</span>
+                    <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-indigo-600 group-hover:w-full transition-all duration-300 
+                        {{ request()->routeIs('dashboard') ? 'w-full' : 'w-0' }}"></span>
                 </x-nav-link>
 
-               
+                <!-- Manajemen User -->
+                @if(in_array(Auth::user()->role, ['super_admin', 'admin']))
+                    <x-nav-link :href="route('users.index')" 
+                                :active="request()->routeIs('users.*')" 
+                                class="flex items-center space-x-2 relative group transition-all duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                  d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87M12 4a4 4 0 100 8 4 4 0 000-8z" />
+                        </svg>
+                        <span>Manajemen User</span>
+                        <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 group-hover:w-full transition-all duration-300 
+                            {{ request()->routeIs('users.*') ? 'w-full' : 'w-0' }}"></span>
+                    </x-nav-link>
+                @endif
+
+                <!-- Jenis Cacat -->
+                @if(in_array(Auth::user()->role, ['super_admin', 'admin', 'qc']))
+                    <x-nav-link :href="route('jenis_cacat.index')" 
+                                :active="request()->routeIs('jenis_cacat.*')" 
+                                class="flex items-center space-x-2 relative group transition-all duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-pink-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                  d="M9 12l2 2 4-4m5-2a9 9 0 11-9-9 9 9 0 019 9z" />
+                        </svg>
+                        <span>Jenis Cacat</span>
+                        <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-pink-600 group-hover:w-full transition-all duration-300 
+                            {{ request()->routeIs('jenis_cacat.*') ? 'w-full' : 'w-0' }}"></span>
+                    </x-nav-link>
+                @endif
+
+                <!-- Quality Control -->
+                @if(in_array(Auth::user()->role, ['super_admin', 'admin', 'qc', 'Verifikator']))
+    <x-nav-link :href="route('data-cacat.index')" 
+                :active="request()->routeIs('data-cacat.*')" 
+                class="flex items-center space-x-2 relative group transition-all duration-300">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M9 17v-6h13v6M9 17l-6 6m6-6l6 6" />
+        </svg>
+        <span>
+            @php
+                $role = Auth::user()->role;
+            @endphp
+            @if($role === 'Verifikator')
+                Verifikasi
+            @elseif($role === 'qc')
+                Quality Control
+            @elseif(in_array($role, ['admin', 'super_admin']))
+                Data Cacat
+            @endif
+        </span>
+        <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-green-600 group-hover:w-full transition-all duration-300 
+            {{ request()->routeIs('data-cacat.*') ? 'w-full' : 'w-0' }}"></span>
+    </x-nav-link>
+@endif
+
 
             </div>
 
             <!-- Right: User Menu -->
             <div class="hidden md:flex items-center space-x-3">
-                
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
                         <button 
@@ -34,9 +94,8 @@
                                 <circle cx="12" cy="7" r="4" />
                             </svg>
                             <div class="text-gray-600 text-sm">
-                             <span class="text-indigo-600 font-semibold">{{ Auth::user()->name }}</span> 👋
+                                <span class="text-indigo-600 font-semibold">{{ Auth::user()->name }}</span> 👋
                             </div>
-
                             <svg class="ml-1 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
                                       d="M6 8l4 4 4-4" />
@@ -79,12 +138,30 @@
     </div>
 
     <!-- Mobile Menu -->
-    <div :class="{'block': open, 'hidden': ! open}" class="hidden md:hidden bg-white border-t border-gray-200">
+    <div :class="{'block': open, 'hidden': ! open}" 
+         class="hidden md:hidden bg-white border-t border-gray-200">
         <div class="py-3 space-y-1">
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                 Dashboard
             </x-responsive-nav-link>
-            
+
+            @if(in_array(Auth::user()->role, ['super_admin', 'admin']))
+                <x-responsive-nav-link :href="route('users.index')" :active="request()->routeIs('users.*')">
+                    Manajemen User
+                </x-responsive-nav-link>
+            @endif
+
+            @if(in_array(Auth::user()->role, ['super_admin', 'admin', 'qc']))
+                <x-responsive-nav-link :href="route('jenis_cacat.index')" :active="request()->routeIs('jenis_cacat.*')">
+                    Jenis Cacat
+                </x-responsive-nav-link>
+            @endif
+
+            @if(in_array(Auth::user()->role, ['super_admin', 'admin', 'qc', 'Verifikator']))
+                <x-responsive-nav-link :href="route('data-cacat.index')" :active="request()->routeIs('data-cacat.*')">
+                    Quality Control
+                </x-responsive-nav-link>
+            @endif
         </div>
 
         <div class="pt-3 pb-2 border-t border-gray-200">

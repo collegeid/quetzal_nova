@@ -19,3 +19,5 @@ class Laporan extends Model
         'mesin_bermasalah',
     ];
 }
+
+
