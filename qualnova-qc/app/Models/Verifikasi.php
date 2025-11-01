@@ -17,7 +17,6 @@ class Verifikasi extends Model
         'qc_id',
         'tanggal_verifikasi',
         'valid',
-        'catatan',
     ];
 
     // 🔗 Relasi

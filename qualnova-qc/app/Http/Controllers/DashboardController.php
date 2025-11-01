@@ -18,7 +18,7 @@ class DashboardController extends Controller
 
     public function trendChart(Request $request)
     {
-        $range = $request->range ?? 'day'; // default per hari
+        $range = $request->range ?? 'day';
     
         $query = DataCacat::join('verifikasi', 'data_cacat.id_cacat', '=', 'verifikasi.id_cacat')
             ->where('verifikasi.valid', true);
@@ -94,6 +94,16 @@ class DashboardController extends Controller
     public function index()
     {
         $user = auth()->user();
+
+        if (!$user || !$user->role) {
+            return redirect()->route('login')->with('error', 'Silakan login terlebih dahulu.');
+        }
+    
+        if ($user->role === 'operator_produksi') {
+            return view('dashboard.operator', compact('user'));
+        }
+    
+        if (in_array($user->role, ['super_admin', 'manager_produksi', 'petugas_qc'])) {
     
         $totalCacat = DataCacat::count();
         $totalJenis = JenisCacat::count();
@@ -101,10 +111,8 @@ class DashboardController extends Controller
         $verifikasiValid = Verifikasi::where('valid', true)->count();
         $verifikasiBelum = Verifikasi::where('valid', false)->count();
     
-        // ambil laporan kalau ada
         $laporan = Laporan::orderByDesc('total_cacat')->first();
     
-       // Jenis cacat terbanyak berdasarkan data yang valid
             $jenisTerbanyak = DataCacat::join('verifikasi', 'data_cacat.id_cacat', '=', 'verifikasi.id_cacat')
                 ->join('jenis_cacat', 'data_cacat.id_jenis', '=', 'jenis_cacat.id_jenis')
                 ->where('verifikasi.valid', true)
@@ -150,8 +158,7 @@ class DashboardController extends Controller
                 ->groupBy('lokasi_mesin')
                 ->get();
 
-            // Ambil jumlah cacat valid maksimum sebagai acuan performa 0%
-            $maxCacat = $mesinCacat->max('total_cacat') ?: 1; // agar tidak div0
+            $maxCacat = $mesinCacat->max('total_cacat') ?: 1;
 
             $namaMesin = $mesinCacat->pluck('lokasi_mesin');
             $kinerjaMesin = $mesinCacat->map(function($item) use ($maxCacat) {
@@ -167,12 +174,10 @@ class DashboardController extends Controller
                 ->limit(5)
                 ->get();
 
-        // Untuk chart
         $namaMesin = $topMesin->pluck('lokasi_mesin');
         $jumlahCacatMesin = $topMesin->pluck('total_cacat');
 
 
-        // Mesin bermasalah terbanyak (top mesin rusak)
         $topMesin = DataCacat::join('verifikasi', 'data_cacat.id_cacat', '=', 'verifikasi.id_cacat')
         ->where('verifikasi.valid', true)
         ->select('lokasi_mesin')
@@ -183,14 +188,11 @@ class DashboardController extends Controller
         ->get();
 
 
-        // Untuk chart top 5 mesin rusak
         $namaMesin = $topMesin->pluck('lokasi_mesin');
         $jumlahCacatMesin = $topMesin->pluck('total_cacat');
 
-        // Status sistem awal (bisa diupdate realtime via JS)
         $statusSistem = $this->cekStatusSistem();
 
-        // Ambil daftar bulan unik dari data cacat
         $bulanTersedia = DataCacat::selectRaw('DATE_FORMAT(created_at, "%Y-%m") as bulan')
         ->groupBy('bulan')
         ->orderByDesc('bulan')
@@ -217,5 +219,7 @@ class DashboardController extends Controller
             ));
 
     }
-    
+    return abort(403, 'Akses ditolak untuk role ini.');
+
+}
 }

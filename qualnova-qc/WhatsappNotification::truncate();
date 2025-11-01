@@ -1,0 +1,305 @@
+[90m= [39m[34;4mIlluminate\Database\Eloquent\Collection[39;24m {#2039
+    [34mall[39m: [
+      [34;4mApp\Models\WhatsappNotification[39;24m {#6459
+        [34mid_notif[39m: [35m1[39m,
+        [34mid_cacat[39m: [36mnull[39m,
+        [34mnomor_tujuan[39m: "[32m6282321555232[39m",
+        [34mpesan[39m: """
+          [32mHalo Febriansah (Super Admin),[39m\n
+          \n
+          [32mKamu telah Memverifikasi data cacat dengan detail berikut:[39m\n
+          [32mID Data: 16[39m\n
+          [32mTanggal: 2025-11-01[39m\n
+          [32mShift: Pagi[39m\n
+          [32mJenis Kain: Viscose[39m\n
+          [32mJenis Cacat: Kain Terbakar[39m\n
+          [32mLokasi Mesin: Mesin A10[39m\n
+          """,
+        [34mstatus[39m: "[32msent[39m",
+        [34msent_at[39m: "[32m2025-11-01 20:10:35[39m",
+        [34mcreated_at[39m: "[32m2025-11-01 20:00:27[39m",
+        [34mupdated_at[39m: "[32m2025-11-01 20:10:35[39m",
+      },
+      [34;4mApp\Models\WhatsappNotification[39;24m {#6458
+        [34mid_notif[39m: [35m2[39m,
+        [34mid_cacat[39m: [36mnull[39m,
+        [34mnomor_tujuan[39m: "[32m6282321555232[39m",
+        [34mpesan[39m: """
+          [32mHalo Febriansah (Super Admin),[39m\n
+          \n
+          [32mKamu telah Memverifikasi data cacat dengan detail berikut:[39m\n
+          [32mID Data: 17[39m\n
+          [32mTanggal: 2025-11-01[39m\n
+          [32mShift: Malam[39m\n
+          [32mJenis Kain: Viscose[39m\n
+          [32mJenis Cacat: Warna Tidak Merata[39m\n
+          [32mLokasi Mesin: JET2[39m\n
+          """,
+        [34mstatus[39m: "[32msent[39m",
+        [34msent_at[39m: "[32m2025-11-01 20:46:26[39m",
+        [34mcreated_at[39m: "[32m2025-11-01 20:16:40[39m",
+        [34mupdated_at[39m: "[32m2025-11-01 20:46:26[39m",
+      },
+      [34;4mApp\Models\WhatsappNotification[39;24m {#6457
+        [34mid_notif[39m: [35m3[39m,
+        [34mid_cacat[39m: [36mnull[39m,
+        [34mnomor_tujuan[39m: "[32m6282321555232[39m",
+        [34mpesan[39m: """
+          [32mHalo Febriansah (Super Admin),[39m\n
+          \n
+          [32mKamu telah Memverifikasi data cacat dengan detail berikut:[39m\n
+          [32mID Data: 19[39m\n
+          [32mTanggal: 2025-11-01[39m\n
+          [32mShift: Malam[39m\n
+          [32mJenis Kain: Kotuna[39m\n
+          [32mJenis Cacat: Kain Terbakar[39m\n
+          [32mLokasi Mesin: Mesin 67[39m\n
+          """,
+        [34mstatus[39m: "[32msent[39m",
+        [34msent_at[39m: "[32m2025-11-01 20:47:22[39m",
+        [34mcreated_at[39m: "[32m2025-11-01 20:23:51[39m",
+        [34mupdated_at[39m: "[32m2025-11-01 20:47:22[39m",
+      },
+      [34;4mApp\Models\WhatsappNotification[39;24m {#6456
+        [34mid_notif[39m: [35m4[39m,
+        [34mid_cacat[39m: [35m20[39m,
+        [34mnomor_tujuan[39m: "[32m6282321555232[39m",
+        [34mpesan[39m: """
+          [32mHalo Febriansah (Super Admin),[39m\n
+          \n
+          [32mKamu telah Memverifikasi data cacat dengan detail berikut:[39m\n
+          [32mID Data: 20[39m\n
+          [32mTanggal: 2025-11-01[39m\n
+          [32mShift: Malam[39m\n
+          [32mJenis Kain: Kolla[39m\n
+          [32mJenis Cacat: Warna Tidak Merata[39m\n
+          [32mLokasi Mesin: Mesin 88[39m\n
+          """,
+        [34mstatus[39m: "[32mpending[39m",
+        [34msent_at[39m: [36mnull[39m,
+        [34mcreated_at[39m: "[32m2025-11-01 20:29:58[39m",
+        [34mupdated_at[39m: "[32m2025-11-01 20:29:58[39m",
+      },
+      [34;4mApp\Models\WhatsappNotification[39;24m {#6455
+        [34mid_notif[39m: [35m5[39m,
+        [34mid_cacat[39m: [35m20[39m,
+        [34mnomor_tujuan[39m: "[32m6281222327635[39m",
+        [34mpesan[39m: """
+          [32mHalo Fajri (Supervisor),[39m\n
+          \n
+          [32mFebriansah (Super Admin) telah Memverifikasi data cacat dengan detail berikut:[39m\n
+          [32mID Data: 20[39m\n
+          [32mTanggal: 2025-11-01[39m\n
+          [32mShift: Malam[39m\n
+          [32mJenis Kain: Kolla[39m\n
+          [32mJenis Cacat: Warna Tidak Merata[39m\n
+          [32mLokasi Mesin: Mesin 88[39m\n
+          """,
+        [34mstatus[39m: "[32mpending[39m",
+        [34msent_at[39m: [36mnull[39m,
+        [34mcreated_at[39m: "[32m2025-11-01 20:29:58[39m",
+        [34mupdated_at[39m: "[32m2025-11-01 20:29:58[39m",
+      },
+      [34;4mApp\Models\WhatsappNotification[39;24m {#6454
+        [34mid_notif[39m: [35m6[39m,
+        [34mid_cacat[39m: [35m20[39m,
+        [34mnomor_tujuan[39m: "[32m6281323044561[39m",
+        [34mpesan[39m: """
+          [32mHalo Rizal (QC),[39m\n
+          \n
+          [32mFebriansah (Super Admin) telah Memverifikasi data cacat dengan detail berikut:[39m\n
+          [32mID Data: 20[39m\n
+          [32mTanggal: 2025-11-01[39m\n
+          [32mShift: Malam[39m\n
+          [32mJenis Kain: Kolla[39m\n
+          [32mJenis Cacat: Warna Tidak Merata[39m\n
+          [32mLokasi Mesin: Mesin 88[39m\n
+          """,
+        [34mstatus[39m: "[32mpending[39m",
+        [34msent_at[39m: [36mnull[39m,
+        [34mcreated_at[39m: "[32m2025-11-01 20:29:58[39m",
+        [34mupdated_at[39m: "[32m2025-11-01 20:29:58[39m",
+      },
+      [34;4mApp\Models\WhatsappNotification[39;24m {#6453
+        [34mid_notif[39m: [35m7[39m,
+        [34mid_cacat[39m: [35m21[39m,
+        [34mnomor_tujuan[39m: "[32m6282321555232[39m",
+        [34mpesan[39m: """
+          [32mHalo Febriansah (Super Admin),[39m\n
+          \n
+          [32mKamu telah Memverifikasi data cacat dengan detail berikut:[39m\n
+          [32mID Data: 21[39m\n
+          [32mTanggal: 2025-11-01[39m\n
+          [32mShift: Malam[39m\n
+          [32mJenis Kain: Viscose[39m\n
+          [32mJenis Cacat: Warna Tidak Merata[39m\n
+          [32mLokasi Mesin: Mesin A10[39m\n
+          """,
+        [34mstatus[39m: "[32mpending[39m",
+        [34msent_at[39m: [36mnull[39m,
+        [34mcreated_at[39m: "[32m2025-11-01 20:38:21[39m",
+        [34mupdated_at[39m: "[32m2025-11-01 20:38:21[39m",
+      },
+      [34;4mApp\Models\WhatsappNotification[39;24m {#6452
+        [34mid_notif[39m: [35m8[39m,
+        [34mid_cacat[39m: [35m21[39m,
+        [34mnomor_tujuan[39m: "[32m6281222327635[39m",
+        [34mpesan[39m: """
+          [32mHalo Fajri (Supervisor),[39m\n
+          \n
+          [32mFebriansah (Super Admin) telah Memverifikasi data cacat dengan detail berikut:[39m\n
+          [32mID Data: 21[39m\n
+          [32mTanggal: 2025-11-01[39m\n
+          [32mShift: Malam[39m\n
+          [32mJenis Kain: Viscose[39m\n
+          [32mJenis Cacat: Warna Tidak Merata[39m\n
+          [32mLokasi Mesin: Mesin A10[39m\n
+          """,
+        [34mstatus[39m: "[32mpending[39m",
+        [34msent_at[39m: [36mnull[39m,
+        [34mcreated_at[39m: "[32m2025-11-01 20:38:21[39m",
+        [34mupdated_at[39m: "[32m2025-11-01 20:38:21[39m",
+      },
+      [34;4mApp\Models\WhatsappNotification[39;24m {#6451
+        [34mid_notif[39m: [35m9[39m,
+        [34mid_cacat[39m: [35m21[39m,
+        [34mnomor_tujuan[39m: "[32m6281323044561[39m",
+        [34mpesan[39m: """
+          [32mHalo Rizal (QC),[39m\n
+          \n
+          [32mFebriansah (Super Admin) telah Memverifikasi data cacat dengan detail berikut:[39m\n
+          [32mID Data: 21[39m\n
+          [32mTanggal: 2025-11-01[39m\n
+          [32mShift: Malam[39m\n
+          [32mJenis Kain: Viscose[39m\n
+          [32mJenis Cacat: Warna Tidak Merata[39m\n
+          [32mLokasi Mesin: Mesin A10[39m\n
+          """,
+        [34mstatus[39m: "[32mpending[39m",
+        [34msent_at[39m: [36mnull[39m,
+        [34mcreated_at[39m: "[32m2025-11-01 20:38:21[39m",
+        [34mupdated_at[39m: "[32m2025-11-01 20:38:21[39m",
+      },
+      [34;4mApp\Models\WhatsappNotification[39;24m {#6450
+        [34mid_notif[39m: [35m10[39m,
+        [34mid_cacat[39m: [35m22[39m,
+        [34mnomor_tujuan[39m: "[32m6282321555232[39m",
+        [34mpesan[39m: """
+          [32mHalo Febriansah (Super Admin),[39m\n
+          \n
+          [32mKamu telah Memverifikasi data cacat dengan detail berikut:[39m\n
+          [32mID Data: 22[39m\n
+          [32mTanggal: 2025-11-01[39m\n
+          [32mShift: Malam[39m\n
+          [32mJenis Kain: Viscose[39m\n
+          [32mJenis Cacat: Benang Tarik[39m\n
+          [32mLokasi Mesin: Mesin A10[39m\n
+          """,
+        [34mstatus[39m: "[32mpending[39m",
+        [34msent_at[39m: [36mnull[39m,
+        [34mcreated_at[39m: "[32m2025-11-01 20:45:27[39m",
+        [34mupdated_at[39m: "[32m2025-11-01 20:45:27[39m",
+      },
+      [34;4mApp\Models\WhatsappNotification[39;24m {#6449
+        [34mid_notif[39m: [35m11[39m,
+        [34mid_cacat[39m: [35m22[39m,
+        [34mnomor_tujuan[39m: "[32m6281222327635[39m",
+        [34mpesan[39m: """
+          [32mHalo Fajri (Supervisor),[39m\n
+          \n
+          [32mFebriansah (Super Admin) telah Memverifikasi data cacat dengan detail berikut:[39m\n
+          [32mID Data: 22[39m\n
+          [32mTanggal: 2025-11-01[39m\n
+          [32mShift: Malam[39m\n
+          [32mJenis Kain: Viscose[39m\n
+          [32mJenis Cacat: Benang Tarik[39m\n
+          [32mLokasi Mesin: Mesin A10[39m\n
+          """,
+        [34mstatus[39m: "[32mpending[39m",
+        [34msent_at[39m: [36mnull[39m,
+        [34mcreated_at[39m: "[32m2025-11-01 20:45:27[39m",
+        [34mupdated_at[39m: "[32m2025-11-01 20:45:27[39m",
+      },
+      [34;4mApp\Models\WhatsappNotification[39;24m {#6448
+        [34mid_notif[39m: [35m12[39m,
+        [34mid_cacat[39m: [35m22[39m,
+        [34mnomor_tujuan[39m: "[32m6281323044561[39m",
+        [34mpesan[39m: """
+          [32mHalo Rizal (QC),[39m\n
+          \n
+          [32mFebriansah (Super Admin) telah Memverifikasi data cacat dengan detail berikut:[39m\n
+          [32mID Data: 22[39m\n
+          [32mTanggal: 2025-11-01[39m\n
+          [32mShift: Malam[39m\n
+          [32mJenis Kain: Viscose[39m\n
+          [32mJenis Cacat: Benang Tarik[39m\n
+          [32mLokasi Mesin: Mesin A10[39m\n
+          """,
+        [34mstatus[39m: "[32mpending[39m",
+        [34msent_at[39m: [36mnull[39m,
+        [34mcreated_at[39m: "[32m2025-11-01 20:45:27[39m",
+        [34mupdated_at[39m: "[32m2025-11-01 20:45:27[39m",
+      },
+      [34;4mApp\Models\WhatsappNotification[39;24m {#6447
+        [34mid_notif[39m: [35m13[39m,
+        [34mid_cacat[39m: [35m23[39m,
+        [34mnomor_tujuan[39m: "[32m6282321555232[39m",
+        [34mpesan[39m: """
+          [32mHalo Febriansah (Super Admin),[39m\n
+          \n
+          [32mKamu telah Memverifikasi data cacat dengan detail berikut:[39m\n
+          [32mID Data: 23[39m\n
+          [32mTanggal: 2025-11-01[39m\n
+          [32mShift: Malam[39m\n
+          [32mJenis Kain: Viscose[39m\n
+          [32mJenis Cacat: Warna Tidak Merata[39m\n
+          [32mLokasi Mesin: Mesin A10[39m\n
+          """,
+        [34mstatus[39m: "[32mpending[39m",
+        [34msent_at[39m: [36mnull[39m,
+        [34mcreated_at[39m: "[32m2025-11-01 20:47:07[39m",
+        [34mupdated_at[39m: "[32m2025-11-01 20:47:07[39m",
+      },
+      [34;4mApp\Models\WhatsappNotification[39;24m {#6446
+        [34mid_notif[39m: [35m14[39m,
+        [34mid_cacat[39m: [35m23[39m,
+        [34mnomor_tujuan[39m: "[32m6281222327635[39m",
+        [34mpesan[39m: """
+          [32mHalo Fajri (Supervisor),[39m\n
+          \n
+          [32mFebriansah (Super Admin) telah Memverifikasi data cacat dengan detail berikut:[39m\n
+          [32mID Data: 23[39m\n
+          [32mTanggal: 2025-11-01[39m\n
+          [32mShift: Malam[39m\n
+          [32mJenis Kain: Viscose[39m\n
+          [32mJenis Cacat: Warna Tidak Merata[39m\n
+          [32mLokasi Mesin: Mesin A10[39m\n
+          """,
+        [34mstatus[39m: "[32mpending[39m",
+        [34msent_at[39m: [36mnull[39m,
+        [34mcreated_at[39m: "[32m2025-11-01 20:47:07[39m",
+        [34mupdated_at[39m: "[32m2025-11-01 20:47:07[39m",
+      },
+      [34;4mApp\Models\WhatsappNotification[39;24m {#6445
+        [34mid_notif[39m: [35m15[39m,
+        [34mid_cacat[39m: [35m23[39m,
+        [34mnomor_tujuan[39m: "[32m6281323044561[39m",
+        [34mpesan[39m: """
+          [32mHalo Rizal (QC),[39m\n
+          \n
+          [32mFebriansah (Super Admin) telah Memverifikasi data cacat dengan detail berikut:[39m\n
+          [32mID Data: 23[39m\n
+          [32mTanggal: 2025-11-01[39m\n
+          [32mShift: Malam[39m\n
+          [32mJenis Kain: Viscose[39m\n
+          [32mJenis Cacat: Warna Tidak Merata[39m\n
+          [32mLokasi Mesin: Mesin A10[39m\n
+          """,
+        [34mstatus[39m: "[32mpending[39m",
+        [34msent_at[39m: [36mnull[39m,
+        [34mcreated_at[39m: "[32m2025-11-01 20:47:07[39m",
+        [34mupdated_at[39m: "[32m2025-11-01 20:47:07[39m",
+      },
+    ],
+  }
+
