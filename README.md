@@ -1,7 +1,3 @@
-Berikut versi **update lengkap dan terstruktur ulang** dari dokumen proyek kamu — sudah disesuaikan dengan **penambahan fitur Notification Queue WhatsApp** dan **pembagian tanggung jawab terbaru (Jobdesk & Modul)** 👇
-
----
-
 # 🧭 **1. Gambaran Umum Proyek**
 
 **Tujuan:**
@@ -240,5 +236,3 @@ Admin
   ↓
 [Laporan & Dashboard Visual]
 ```
-
----
