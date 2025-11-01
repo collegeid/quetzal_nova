@@ -148,7 +148,7 @@ Schema::create('whatsapp_notifications', function (Blueprint $table) {
 
 ---
 
-### 🔹 C. Verifikasi (Verifikator)
+### 🔹 C. Petugas QC (Verifikator)
 
 1. Verifikator melihat daftar data `status_verifikasi = false`.
 2. Klik “Verifikasi”.
@@ -156,15 +156,13 @@ Schema::create('whatsapp_notifications', function (Blueprint $table) {
 
    * `status_verifikasi = true`
    * Catatan disimpan
-   * Notifikasi dikirim ke Admin melalui queue:
-
-     > "Data cacat #ID sudah diverifikasi oleh [Nama Verifikator]."
+   * Notifikasi dikirim ke Manager Produksi, Petugas QC lain (self also), dan Super Admin melalui queue:
 
 ---
 
 ### 🔹 D. Laporan & Dashboard
 
-1. Admin buka `/laporan`.
+1. Manager Produksi & Petugas QC dapat membuka `/laporan`.
 2. Sistem hitung agregasi otomatis (cacat per mesin, jenis, dan periode).
 3. Data dikirim ke Dashboard → divisualisasikan dengan **Chart.js / ApexCharts**.
 
@@ -176,7 +174,7 @@ Schema::create('whatsapp_notifications', function (Blueprint $table) {
 2. Setiap `status = pending`, sistem kirim pesan via Fonnte API.
 3. Setelah terkirim:
 
-   * Update status ke `terkirim`.
+   * Update status ke `sent`.
    * Simpan `sent_at` timestamp.
 
 ---
@@ -209,7 +207,7 @@ D -->|Failed| F[status=gagal]
 
 | Nama                      | Role / Jobdesk                         | Modul / Area Tanggung Jawab         |
 | ------------------------- | -------------------------------------- | ----------------------------------- |
-| **Febriansah Dirgantara** | System Architect & Dashboard Developer | Auth, Dashboard, Notification Queue |
+| **Febriansah Dirgantara** | System Architect & Fullstack Developer | Auth, Dashboard, Notification Queue |
 | **Rizal Maulana**         | Backend Developer                      | User Management, Laporan            |
 | **Rifqii Fauzi Anwar**    | Fullstack Developer                    | DataCacat, Dashboard Graph          |
 | **Fajri Lukman**          | Backend Developer                      | Verifikasi & Validasi Data          |
@@ -232,7 +230,7 @@ Verifikator
   ↓
 Trigger WhatsApp (notif ke admin)
   ↓
-Admin
+Manager Produksi, Pegawai QC, Super Admin
   ↓
 [Laporan & Dashboard Visual]
 ```
