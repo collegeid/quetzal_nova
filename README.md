@@ -196,7 +196,7 @@ Schema::create('whatsapp_notifications', function (Blueprint $table) {
 
 ```mermaid
 flowchart LR
-A[DataCacat Created] --> B[Create WhatsappNotification (status=pending)]
+A[DataCacat Created] --> B[Create WhatsappNotification - pending]
 B --> C[Laravel Queue Worker]
 C --> D{API Fonnte}
 D -->|Success| E[status=terkirim + sent_at updated]
@@ -236,4 +236,3 @@ Admin
   ↓
 [Laporan & Dashboard Visual]
 ```
----
