@@ -1,11 +1,10 @@
 <nav x-data="{ open: false }" 
      class="backdrop-blur-md bg-white/80 border-b border-gray-200 shadow-sm sticky top-0 z-50 transition-all duration-300">
 
-    <!-- Primary Navigation Menu -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16 items-center">
 
-            <!-- Center: Navigation Links -->
+            <!-- Center Navigation -->
             <div class="hidden md:flex items-center space-x-6">
 
                 <!-- Dashboard -->
@@ -23,7 +22,7 @@
                 </x-nav-link>
 
                 <!-- Manajemen User -->
-                @if(in_array(Auth::user()->role, ['super_admin', 'admin']))
+                @if(in_array(Auth::user()->role, ['super_admin', 'manager_produksi', 'supervisor']))
                     <x-nav-link :href="route('users.index')" 
                                 :active="request()->routeIs('users.*')" 
                                 class="flex items-center space-x-2 relative group transition-all duration-300">
@@ -38,7 +37,7 @@
                 @endif
 
                 <!-- Jenis Cacat -->
-                @if(in_array(Auth::user()->role, ['super_admin', 'admin', 'qc']))
+                @if(in_array(Auth::user()->role, ['super_admin', 'manager_produksi']))
                     <x-nav-link :href="route('jenis_cacat.index')" 
                                 :active="request()->routeIs('jenis_cacat.*')" 
                                 class="flex items-center space-x-2 relative group transition-all duration-300">
@@ -52,32 +51,31 @@
                     </x-nav-link>
                 @endif
 
-                <!-- Quality Control -->
-                @if(in_array(Auth::user()->role, ['super_admin', 'admin', 'qc', 'Verifikator']))
-    <x-nav-link :href="route('data-cacat.index')" 
-                :active="request()->routeIs('data-cacat.*')" 
-                class="flex items-center space-x-2 relative group transition-all duration-300">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M9 17v-6h13v6M9 17l-6 6m6-6l6 6" />
-        </svg>
-        <span>
-            @php
-                $role = Auth::user()->role;
-            @endphp
-            @if($role === 'Verifikator')
-                Verifikasi
-            @elseif($role === 'qc')
-                Quality Control
-            @elseif(in_array($role, ['admin', 'super_admin']))
-                Data Cacat
-            @endif
-        </span>
-        <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-green-600 group-hover:w-full transition-all duration-300 
-            {{ request()->routeIs('data-cacat.*') ? 'w-full' : 'w-0' }}"></span>
-    </x-nav-link>
-@endif
-
+                <!-- Data Cacat / QC -->
+                @if(in_array(Auth::user()->role, ['super_admin', 'manager_produksi', 'supervisor', 'petugas_qc', 'operator_produksi']))
+                    <x-nav-link :href="route('data-cacat.index')" 
+                                :active="request()->routeIs('data-cacat.*')" 
+                                class="flex items-center space-x-2 relative group transition-all duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M9 17v-6h13v6M9 17l-6 6m6-6l6 6" />
+                        </svg>
+                        <span>
+                            @php
+                                $role = Auth::user()->role;
+                            @endphp
+                            @if($role === 'petugas_qc')
+                                Verifikasi
+                            @elseif($role === 'operator_produksi')
+                                Input Data Cacat
+                            @elseif(in_array($role, ['manager_produksi', 'supervisor', 'super_admin']))
+                                Manage Data Cacat
+                            @endif
+                        </span>
+                        <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-green-600 group-hover:w-full transition-all duration-300 
+                            {{ request()->routeIs('data-cacat.*') ? 'w-full' : 'w-0' }}"></span>
+                    </x-nav-link>
+                @endif
 
             </div>
 
@@ -145,21 +143,21 @@
                 Dashboard
             </x-responsive-nav-link>
 
-            @if(in_array(Auth::user()->role, ['super_admin', 'admin']))
+            @if(in_array(Auth::user()->role, ['super_admin', 'manager_produksi']))
                 <x-responsive-nav-link :href="route('users.index')" :active="request()->routeIs('users.*')">
                     Manajemen User
                 </x-responsive-nav-link>
             @endif
 
-            @if(in_array(Auth::user()->role, ['super_admin', 'admin', 'qc']))
+            @if(in_array(Auth::user()->role, ['super_admin', 'manager_produksi']))
                 <x-responsive-nav-link :href="route('jenis_cacat.index')" :active="request()->routeIs('jenis_cacat.*')">
                     Jenis Cacat
                 </x-responsive-nav-link>
             @endif
 
-            @if(in_array(Auth::user()->role, ['super_admin', 'admin', 'qc', 'Verifikator']))
+            @if(in_array(Auth::user()->role, ['super_admin', 'manager_produksi', 'petugas_qc', 'operator_produksi']))
                 <x-responsive-nav-link :href="route('data-cacat.index')" :active="request()->routeIs('data-cacat.*')">
-                    Quality Control
+                    Data Produksi
                 </x-responsive-nav-link>
             @endif
         </div>
@@ -174,7 +172,6 @@
                     Profil
                 </x-responsive-nav-link>
 
-                <!-- Logout -->
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
                     <x-responsive-nav-link href="{{ route('logout') }}"

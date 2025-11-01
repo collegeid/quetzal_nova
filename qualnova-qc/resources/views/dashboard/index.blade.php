@@ -74,7 +74,7 @@
 
                     <!-- Grafik Distribusi Jenis Cacat -->
                     <div class="bg-white rounded-2xl p-6 shadow-md border border-gray-100">
-                        <h4 class="text-lg font-semibold text-gray-800 mb-4">📊 Distribusi Jenis Cacat</h4>
+                        <h4 class="text-lg font-semibold text-gray-800 mb-4">📊 Distribusi Sumber Cacat</h4>
                         <canvas id="jenisChart" height="150"></canvas>
                     </div>
               </div>
@@ -104,7 +104,6 @@
     <!-- Chart.js Scripts -->
     <script>
    
-        // Chart 1: Trend Chart: Harian, Mingguan, Bulanan, Tahunan
 
         const ctx = document.getElementById('trendChart').getContext('2d');
             let trendChart;
@@ -142,16 +141,12 @@
                 });
             }
 
-            // initial load
             loadTrendChart();
-
-            // filter button
             document.getElementById('filterBtn').addEventListener('click', () => {
                 const range = document.getElementById('rangeFilter').value;
                 loadTrendChart(range);
             });
 
-        // 🔹 Chart 2: Distribusi Jenis Cacat
         new Chart(document.getElementById('jenisChart'), {
             type: 'bar',
             data: {
@@ -172,11 +167,10 @@
             }
         });
 
-     // 🔹 Chart 3: Status Verifikasi
 const ctxVerifikasi = document.getElementById('verifikasiChart').getContext('2d');
 
         new Chart(ctxVerifikasi, {
-            type: 'bar', // ganti dari 'doughnut' ke 'bar'
+            type: 'bar', 
             data: {
                 labels: ['Valid', 'Belum Valid'],
                 datasets: [{
@@ -235,7 +229,7 @@ const ctxVerifikasi = document.getElementById('verifikasiChart').getContext('2d'
                 }]
             },
             options: {
-                indexAxis: 'y', // horizontal bar
+                indexAxis: 'y', 
                 responsive: true,
                 maintainAspectRatio: false,
                 scales: {
@@ -275,7 +269,6 @@ const ctxVerifikasi = document.getElementById('verifikasiChart').getContext('2d'
                 });
         }
 
-        // update tiap 5 detik
         setInterval(updateStatusSistem, 500);
     </script>
 </x-app-layout>

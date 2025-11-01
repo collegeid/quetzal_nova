@@ -1,61 +1,246 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+Berikut versi **update lengkap dan terstruktur ulang** dari dokumen proyek kamu — sudah disesuaikan dengan **penambahan fitur Notification Queue WhatsApp** dan **pembagian tanggung jawab terbaru (Jobdesk & Modul)** 👇
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+---
 
-## About Laravel
+# 🧭 **1. Gambaran Umum Proyek**
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+**Tujuan:**
+Sistem berbasis web untuk mencatat, memverifikasi, dan melaporkan data kecacatan kain secara efisien, dengan **notifikasi WhatsApp otomatis** untuk mempercepat koordinasi antar tim.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+**Peran utama:**
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+* **User:** Petugas QC, Operator Produksi, dan Manager Produksi, Super Admin
+* **DataCacat:** Catatan utama data cacat
+* **Verifikasi:** Validasi data oleh QC/atasan
+* **Laporan:** Rekapitulasi dan analisis otomatis
+* **DashboardQC:** Statistik visual
+* **Notification Queue (WhatsApp):** Otomatisasi pengiriman pesan berbasis antrian
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+# 🏗️ **2. Struktur Modul Laravel**
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+| Modul                  | Deskripsi                                                                | Route Prefix     | Penanggung Jawab                             | Status            |
+| ---------------------- | ------------------------------------------------------------------------ | ---------------- | -------------------------------------------- | ----------------- |
+| **Auth**               | Login, logout, dan setup awal super admin                                | `/auth`          | **Febriansah Dirgantara**                    | ✅ Done            |
+| **User**               | Manajemen pengguna, peran, dan WhatsApp ID                               | `/users`         | **Rizal Maulana**                            | ☐ In Progress     |
+| **DataCacat**          | CRUD data kecacatan kain                                                 | `/data-cacat`    | **Rifqii Fauzi Anwar**                       | ☐ In Progress     |
+| **Verifikasi**         | Proses validasi & konfirmasi data cacat                                  | `/verifikasi`    | **Fajri Lukman**                             | ☐ In Progress     |
+| **Laporan**            | Rekap data, perhitungan, dan export PDF/Excel                            | `/laporan`       | **Rizal Maulana** & **Fajri Lukman**         | ☐ Planned         |
+| **Dashboard**          | Visualisasi statistik data cacat dan kinerja mesin                       | `/dashboard`     | **Febriansah Dirgantara** | ✅ Done            |
+| **Notification Queue** | Antrian pengiriman pesan WhatsApp otomatis (via Fonnte API atau sejenis) | `/notifications` | **Febriansah Dirgantara**                    | 🧩 In Development |
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+---
 
-## Laravel Sponsors
+# 🗂️ **3. Database Struktur**
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### 🧍‍♂️ **Tabel 1: `users`**
 
-### Premium Partners
+```php
+Schema::create('users', function (Blueprint $table) {
+    $table->id('id_user');
+    $table->string('nama');
+    $table->string('username')->unique();
+    $table->string('email')->unique();
+    $table->string('whatsapp')->unique()->nullable();
+    $table->string('password');
+    $table->string('role'); // admin, qc, verifikator
+    $table->timestamps();
+});
+```
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+---
 
-## Contributing
+### 🧵 **Tabel 2: `jenis_cacat`**
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```php
+Schema::create('jenis_cacat', function (Blueprint $table) {
+    $table->id('id_jenis');
+    $table->string('nama_jenis');
+});
+```
 
-## Code of Conduct
+---
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### 📋 **Tabel 3: `data_cacat`**
 
-## Security Vulnerabilities
+```php
+Schema::create('data_cacat', function (Blueprint $table) {
+    $table->id('id_cacat');
+    $table->date('tanggal');
+    $table->string('shift');
+    $table->string('jenis_kain')->nullable();
+    $table->string('lokasi_mesin');
+    $table->string('jenis_cacat');
+    $table->string('foto_bukti')->nullable();
+    $table->boolean('status_verifikasi')->default(false);
+    $table->foreignId('id_user')->constrained('users');
+    $table->foreignId('id_jenis')->constrained('jenis_cacat');
+    $table->timestamps();
+});
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+---
 
-## License
+### ✅ **Tabel 4: `verifikasi`**
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```php
+Schema::create('verifikasi', function (Blueprint $table) {
+    $table->id('id_verifikasi');
+    $table->foreignId('id_cacat')->constrained('data_cacat');
+    $table->foreignId('qc_id')->constrained('users');
+    $table->date('tanggal_verifikasi');
+    $table->boolean('valid');
+    $table->text('catatan')->nullable();
+    $table->timestamps();
+});
+```
+
+---
+
+### 📊 **Tabel 5: `laporan`**
+
+```php
+Schema::create('laporan', function (Blueprint $table) {
+    $table->id('id_laporan');
+    $table->string('periode');
+    $table->integer('total_cacat');
+    $table->string('jenis_cacat_terbanyak');
+    $table->string('mesin_bermasalah');
+    $table->timestamps();
+});
+```
+
+---
+
+### 💬 **Tabel 6: `whatsapp_notifications` (Baru)**
+
+```php
+Schema::create('whatsapp_notifications', function (Blueprint $table) {
+    $table->id('id_notif');
+    $table->string('nomor_tujuan');
+    $table->text('pesan');
+    $table->enum('status', ['pending', 'terkirim', 'gagal'])->default('pending');
+    $table->timestamp('sent_at')->nullable();
+    $table->timestamps();
+});
+```
+
+---
+
+# ⚙️ **4. Workflow Sistem**
+
+### 🔹 A. Login & Role Access
+
+* Middleware `CheckRole` membatasi akses antar role.
+* Role menentukan akses halaman dan fitur.
+
+---
+
+### 🔹 B. Input DataCacat (QC Operator)
+
+1. Form input `/data-cacat/create`.
+2. Submit data → status_verifikasi = false.
+3. Sistem otomatis membuat entri baru di **`whatsapp_notifications`**:
+
+   ```
+   nomor_tujuan = nomor verifikator
+   pesan = "Data cacat baru menunggu verifikasi."
+   status = pending
+   ```
+4. Queue Worker mengirimkan pesan ke Fonnte API → update `status` ke `terkirim` atau `gagal`.
+
+---
+
+### 🔹 C. Verifikasi (Verifikator)
+
+1. Verifikator melihat daftar data `status_verifikasi = false`.
+2. Klik “Verifikasi”.
+3. Jika disetujui:
+
+   * `status_verifikasi = true`
+   * Catatan disimpan
+   * Notifikasi dikirim ke Admin melalui queue:
+
+     > "Data cacat #ID sudah diverifikasi oleh [Nama Verifikator]."
+
+---
+
+### 🔹 D. Laporan & Dashboard
+
+1. Admin buka `/laporan`.
+2. Sistem hitung agregasi otomatis (cacat per mesin, jenis, dan periode).
+3. Data dikirim ke Dashboard → divisualisasikan dengan **Chart.js / ApexCharts**.
+
+---
+
+### 🔹 E. Notification Queue (Fonnte Integration)
+
+1. Worker Laravel Queue (`php artisan queue:work`) memantau tabel `whatsapp_notifications`.
+2. Setiap `status = pending`, sistem kirim pesan via Fonnte API.
+3. Setelah terkirim:
+
+   * Update status ke `terkirim`.
+   * Simpan `sent_at` timestamp.
+
+---
+
+# 🧩 **5. Struktur Model & Relasi**
+
+| Model                  | Relasi                                     |
+| ---------------------- | ------------------------------------------ |
+| `User`                 | hasMany(`DataCacat`)                       |
+| `DataCacat`            | belongsTo(`User`), hasOne(`Verifikasi`)    |
+| `Verifikasi`           | belongsTo(`DataCacat`)                     |
+| `WhatsappNotification` | standalone (dipanggil oleh event/observer) |
+
+---
+
+# 🔁 **6. Workflow Queue WhatsApp**
+
+```mermaid
+flowchart LR
+A[DataCacat Created] --> B[Create WhatsappNotification (status=pending)]
+B --> C[Laravel Queue Worker]
+C --> D{API Fonnte}
+D -->|Success| E[status=terkirim + sent_at updated]
+D -->|Failed| F[status=gagal]
+```
+
+---
+
+# 💼 **7. Jobdesk Akhir Tim**
+
+| Nama                      | Role / Jobdesk                         | Modul / Area Tanggung Jawab         |
+| ------------------------- | -------------------------------------- | ----------------------------------- |
+| **Febriansah Dirgantara** | System Architect & Dashboard Developer | Auth, Dashboard, Notification Queue |
+| **Rizal Maulana**         | Backend Developer                      | User Management, Laporan            |
+| **Rifqii Fauzi Anwar**    | Fullstack Developer                    | DataCacat, Dashboard Graph          |
+| **Fajri Lukman**          | Backend Developer                      | Verifikasi & Validasi Data          |
+| **Semua Tim**             | Testing, Review, Documentation         | —                                   |
+
+---
+
+# 🧠 **8. Ringkasan Logika Proses (Simplified)**
+
+```text
+QC Operator
+  ↓
+[Input DataCacat]
+  ↓
+Trigger WhatsApp (notif ke verifikator)
+  ↓
+Verifikator
+  ↓
+[Verifikasi & Catatan]
+  ↓
+Trigger WhatsApp (notif ke admin)
+  ↓
+Admin
+  ↓
+[Laporan & Dashboard Visual]
+```
+
+---
+
+Apakah kamu mau sekalian saya bantu buatkan **migration lengkap (Laravel)** untuk tabel `whatsapp_notifications` beserta **Job queue + contoh script kirim Fonnte API** biar bisa langsung dipakai di project-mu?
