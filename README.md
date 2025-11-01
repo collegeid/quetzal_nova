@@ -195,12 +195,20 @@ Schema::create('whatsapp_notifications', function (Blueprint $table) {
 ```mermaid
 flowchart LR
 A[DataCacat Created / Updated] --> B{WhatsappNotification already exists?}
-B -->|Yes| C[Skip creation, do not queue]
+B -->|Yes| C[Skip creation]
+C --> I[Worker cek status perubahan]
+I --> J{Status berubah?}
+J -->|Yes| E[Laravel Queue Worker]
+J -->|No| K[Do nothing]
 B -->|No| D[Create WhatsappNotification - pending]
 D --> E[Laravel Queue Worker]
 E --> F{API Fonnte Response}
 F -->|Success| G[Update status=sent + sent_at]
 F -->|Failed| H[Update status=gagal]
+H --> L{Next retry / closed?}
+L -->|Retry| E
+L -->|Closed| M[Stop]
+
 ```
 
 ---
