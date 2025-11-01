@@ -197,7 +197,7 @@ flowchart LR
 A[DataCacat Created] --> B[Create WhatsappNotification - pending]
 B --> C[Laravel Queue Worker]
 C --> D{API Fonnte}
-D -->|Success| E[status=terkirim + sent_at updated]
+D -->|Success| E[status=sent + sent_at updated]
 D -->|Failed| F[status=gagal]
 ```
 
