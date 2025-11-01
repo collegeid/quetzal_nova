@@ -1,49 +1,57 @@
+Berikut versi **update lengkap dan terstruktur ulang** dari dokumen proyek kamu — sudah disesuaikan dengan **penambahan fitur Notification Queue WhatsApp** dan **pembagian tanggung jawab terbaru (Jobdesk & Modul)** 👇
 
 ---
 
-## 🧭 **1. Gambaran Umum Proyek**
+# 🧭 **1. Gambaran Umum Proyek**
 
-Tujuan: Sistem berbasis web untuk mencatat, memverifikasi, dan melaporkan data kecacatan barang kain.
-Peran utama:
+**Tujuan:**
+Sistem berbasis web untuk mencatat, memverifikasi, dan melaporkan data kecacatan kain secara efisien, dengan **notifikasi WhatsApp otomatis** untuk mempercepat koordinasi antar tim.
 
-* **User (QC Operator, Admin, Verifikator)**
-* **DataCacat (catatan utama kecacatan)**
-* **Verifikasi (validasi dari QC/atasan)**
-* **Laporan (rekap dan analisis)**
-* **DashboardQC (statistik & grafik)**
+**Peran utama:**
+
+* **User:** Petugas QC, Operator Produksi, dan Manager Produksi, Super Admin
+* **DataCacat:** Catatan utama data cacat
+* **Verifikasi:** Validasi data oleh QC/atasan
+* **Laporan:** Rekapitulasi dan analisis otomatis
+* **DashboardQC:** Statistik visual
+* **Notification Queue (WhatsApp):** Otomatisasi pengiriman pesan berbasis antrian
 
 ---
 
-## 🏗️ **2. Struktur Modul Laravel**
+# 🏗️ **2. Struktur Modul Laravel**
 
-| Modul          | Deskripsi                                                          | Route Prefix  | Penanggung Jawab                                   | Checklist |
-| -------------- | ------------------------------------------------------------------ | ------------- | -------------------------------------------------- | --------- |
-| **Auth**       | Login, Logout,          (inisiasi awal sistem & super admin setup) | `/auth`       | **Febriansah Dirgantara**                          |    Done   |
-| **User**       | Manajemen pengguna dan peran                                       | `/users`      | **Rizal Maulana**                                  | ☐ Not Yet |
-| **DataCacat**  | CRUD data kecacatan                                                | `/data-cacat` | **Rifqii Fauzi Anwar**                             | ☐ Not Yet |
-| **Verifikasi** | Proses validasi data cacat                                         | `/verifikasi` | **Fajri Lukman**                                   | ☐ Not Yet |
-| **Laporan**    | Rekap data dan export PDF/Excel                                    | `/laporan`    | **Rizal Maulana** & **Fajri Lukman**               | ☐ Not Yet |
-| **Dashboard**  | Statistik visual (grafik, jenis cacat, mesin bermasalah) | `/dashboard`  | **Febriansah Dirgantara** & **Rifqii Fauzi Anwar**           |    Done   |
+| Modul                  | Deskripsi                                                                | Route Prefix     | Penanggung Jawab                     | Status        |
+| ---------------------- | ------------------------------------------------------------------------ | ---------------- | ------------------------------------ | ------------- |
+| **Auth**               | Login, logout, dan setup awal super admin                                | `/auth`          | **Febriansah Dirgantara**            | ✅ Done        |
+| **User**               | Manajemen pengguna, peran, dan WhatsApp ID                               | `/users`         | **Rizal Maulana**                    | ☐ In Progress |
+| **DataCacat**          | CRUD data kecacatan kain                                                 | `/data-cacat`    | **Rifqii Fauzi Anwar**               | ☐ In Progress |
+| **Verifikasi**         | Proses validasi & konfirmasi data cacat                                  | `/verifikasi`    | **Fajri Lukman**                     | ☐ In Progress |
+| **Laporan**            | Rekap data, perhitungan, dan export PDF/Excel                            | `/laporan`       | **Rizal Maulana** & **Fajri Lukman** | ☐ Planned     |
+| **Dashboard**          | Visualisasi statistik data cacat dan kinerja mesin                       | `/dashboard`     | **Febriansah Dirgantara**            | ✅ Done        |
+| **Notification Queue** | Antrian pengiriman pesan WhatsApp otomatis (via Fonnte API atau sejenis) | `/notifications` | **Febriansah Dirgantara**            | ✅ Done        |
+
 ---
 
-## 🗂️ **3. Database Workflow (Dari ERD)**
+# 🗂️ **3. Database Struktur**
 
-Buat migrasi sesuai tabel-tabel di diagram:
-
-### Tabel 1. `users`
+### 🧍‍♂️ **Tabel 1: `users`**
 
 ```php
 Schema::create('users', function (Blueprint $table) {
     $table->id('id_user');
     $table->string('nama');
     $table->string('username')->unique();
+    $table->string('email')->unique();
+    $table->string('whatsapp')->unique()->nullable();
     $table->string('password');
     $table->string('role'); // admin, qc, verifikator
     $table->timestamps();
 });
 ```
 
-### Tabel 2. `jenis_cacat`
+---
+
+### 🧵 **Tabel 2: `jenis_cacat`**
 
 ```php
 Schema::create('jenis_cacat', function (Blueprint $table) {
@@ -52,7 +60,9 @@ Schema::create('jenis_cacat', function (Blueprint $table) {
 });
 ```
 
-### Tabel 3. `data_cacat`
+---
+
+### 📋 **Tabel 3: `data_cacat`**
 
 ```php
 Schema::create('data_cacat', function (Blueprint $table) {
@@ -70,7 +80,9 @@ Schema::create('data_cacat', function (Blueprint $table) {
 });
 ```
 
-### Tabel 4. `verifikasi`
+---
+
+### ✅ **Tabel 4: `verifikasi`**
 
 ```php
 Schema::create('verifikasi', function (Blueprint $table) {
@@ -80,10 +92,13 @@ Schema::create('verifikasi', function (Blueprint $table) {
     $table->date('tanggal_verifikasi');
     $table->boolean('valid');
     $table->text('catatan')->nullable();
+    $table->timestamps();
 });
 ```
 
-### Tabel 5. `laporan`
+---
+
+### 📊 **Tabel 5: `laporan`**
 
 ```php
 Schema::create('laporan', function (Blueprint $table) {
@@ -98,135 +113,132 @@ Schema::create('laporan', function (Blueprint $table) {
 
 ---
 
-## ⚙️ **4. Workflow Proses Sistem**
+### 💬 **Tabel 6: `whatsapp_notifications` (Baru)**
 
-### 🔹 **A. Login & Role**
-
-1. User login → middleware cek `role`.
-2. Role menentukan akses:
-
-   * Admin: semua modul.
-   * QC Operator: input data cacat.
-   * Verifikator: validasi data cacat.
-
----
-
-### 🔹 **B. Pencatatan Data (QC Operator)**
-
-1. QC Operator buka form `/data-cacat/create`.
-2. Isi: tanggal, shift, jenis kain, lokasi mesin, jenis cacat, foto bukti.
-3. Simpan → `status_verifikasi = false`.
+```php
+Schema::create('whatsapp_notifications', function (Blueprint $table) {
+    $table->id('id_notif');
+    $table->string('nomor_tujuan');
+    $table->text('pesan');
+    $table->enum('status', ['pending', 'terkirim', 'gagal'])->default('pending');
+    $table->timestamp('sent_at')->nullable();
+    $table->timestamps();
+});
+```
 
 ---
 
-### 🔹 **C. Verifikasi (Verifikator)**
+# ⚙️ **4. Workflow Sistem**
 
-1. Verifikator buka `/verifikasi`.
-2. Lihat data cacat dengan `status_verifikasi = false`.
-3. Klik “Verifikasi”:
+### 🔹 A. Login & Role Access
 
-   * Isi catatan & validasi.
-   * Jika valid, ubah `status_verifikasi = true`.
-   * Simpan ke tabel `verifikasi`.
+* Middleware `CheckRole` membatasi akses antar role.
+* Role menentukan akses halaman dan fitur.
 
 ---
 
-### 🔹 **D. Laporan Otomatis (Admin)**
+### 🔹 B. Input DataCacat (QC Operator)
+
+1. Form input `/data-cacat/create`.
+2. Submit data → status_verifikasi = false.
+3. Sistem otomatis membuat entri baru di **`whatsapp_notifications`**:
+
+   ```
+   nomor_tujuan = nomor verifikator
+   pesan = "Data cacat baru menunggu verifikasi."
+   status = pending
+   ```
+4. Queue Worker mengirimkan pesan ke Fonnte API → update `status` ke `terkirim` atau `gagal`.
+
+---
+
+### 🔹 C. Verifikasi (Verifikator)
+
+1. Verifikator melihat daftar data `status_verifikasi = false`.
+2. Klik “Verifikasi”.
+3. Jika disetujui:
+
+   * `status_verifikasi = true`
+   * Catatan disimpan
+   * Notifikasi dikirim ke Admin melalui queue:
+
+     > "Data cacat #ID sudah diverifikasi oleh [Nama Verifikator]."
+
+---
+
+### 🔹 D. Laporan & Dashboard
 
 1. Admin buka `/laporan`.
-2. Sistem hitung otomatis:
-
-   * Total cacat per periode.
-   * Jenis cacat terbanyak.
-   * Mesin paling bermasalah.
-3. Tombol Export:
-
-   * `generatePDF()`
-   * `generateExcel()`
+2. Sistem hitung agregasi otomatis (cacat per mesin, jenis, dan periode).
+3. Data dikirim ke Dashboard → divisualisasikan dengan **Chart.js / ApexCharts**.
 
 ---
 
-### 🔹 **E. DashboardQC**
+### 🔹 E. Notification Queue (Fonnte Integration)
 
-Menampilkan:
+1. Worker Laravel Queue (`php artisan queue:work`) memantau tabel `whatsapp_notifications`.
+2. Setiap `status = pending`, sistem kirim pesan via Fonnte API.
+3. Setelah terkirim:
 
-* Grafik jumlah cacat per shift.
-* Jenis cacat tertinggi.
-* Mesin dengan masalah terbanyak.
-
-Gunakan **Chart.js atau ApexCharts** untuk visualisasi.
-
----
-
-## 🧩 **5. Workflow Laravel (Langkah Implementasi)**
-
-1. **Inisialisasi Proyek**
-
-   ```bash
-   laravel new qc-monitoring
-   cd qc-monitoring
-   php artisan make:auth
-   ```
-
-2. **Buat Model & Controller**
-
-   ```bash
-   php artisan make:model DataCacat -mcr
-   php artisan make:model Verifikasi -mcr
-   php artisan make:model Laporan -mcr
-   php artisan make:model JenisCacat -mcr
-   ```
-
-3. **Tambahkan Relasi antar Model**
-   Contoh di `User.php`:
-
-   ```php
-   public function dataCacat() {
-       return $this->hasMany(DataCacat::class, 'id_user');
-   }
-   ```
-
-4. **Seed Data Awal (Jenis Cacat & Role)**
-
-   * Gunakan seeder untuk membuat data awal seperti “Sobek”, “Noda”, “Benang Tarik”.
-
-5. **Middleware Role**
-
-   * Buat middleware `CheckRole` agar route bisa dibatasi (Admin/QC/Verifikator).
-
-6. **Upload File Handling**
-
-   * Gunakan Laravel Storage (`storage/app/public`) untuk simpan foto bukti.
-   * Gunakan `Intervention/Image` jika ingin resize otomatis.
-
-7. **Export Laporan**
-
-   * PDF: gunakan `barryvdh/laravel-dompdf`
-   * Excel: gunakan `maatwebsite/excel`
-
-8. **Grafik Dashboard**
-
-   * Ambil data agregat dari `data_cacat`.
-   * Render dengan `Chart.js`.
+   * Update status ke `terkirim`.
+   * Simpan `sent_at` timestamp.
 
 ---
 
-## 🧠 **6. Bonus — Alur Logika Simplified**
+# 🧩 **5. Struktur Model & Relasi**
+
+| Model                  | Relasi                                     |
+| ---------------------- | ------------------------------------------ |
+| `User`                 | hasMany(`DataCacat`)                       |
+| `DataCacat`            | belongsTo(`User`), hasOne(`Verifikasi`)    |
+| `Verifikasi`           | belongsTo(`DataCacat`)                     |
+| `WhatsappNotification` | standalone (dipanggil oleh event/observer) |
+
+---
+
+# 🔁 **6. Workflow Queue WhatsApp**
+
+```mermaid
+flowchart LR
+A[DataCacat Created] --> B[Create WhatsappNotification (status=pending)]
+B --> C[Laravel Queue Worker]
+C --> D{API Fonnte}
+D -->|Success| E[status=terkirim + sent_at updated]
+D -->|Failed| F[status=gagal]
+```
+
+---
+
+# 💼 **7. Jobdesk Akhir Tim**
+
+| Nama                      | Role / Jobdesk                         | Modul / Area Tanggung Jawab         |
+| ------------------------- | -------------------------------------- | ----------------------------------- |
+| **Febriansah Dirgantara** | System Architect & Dashboard Developer | Auth, Dashboard, Notification Queue |
+| **Rizal Maulana**         | Backend Developer                      | User Management, Laporan            |
+| **Rifqii Fauzi Anwar**    | Fullstack Developer                    | DataCacat, Dashboard Graph          |
+| **Fajri Lukman**          | Backend Developer                      | Verifikasi & Validasi Data          |
+| **Semua Tim**             | Testing, Review, Documentation         | —                                   |
+
+---
+
+# 🧠 **8. Ringkasan Logika Proses (Simplified)**
 
 ```text
 QC Operator
-   ↓
-[Input DataCacat] ──────► status_verifikasi = false
-   ↓
+  ↓
+[Input DataCacat]
+  ↓
+Trigger WhatsApp (notif ke verifikator)
+  ↓
 Verifikator
-   ↓
-[Verifikasi DataCacat]
-   ↓
-status_verifikasi = true
-   ↓
+  ↓
+[Verifikasi & Catatan]
+  ↓
+Trigger WhatsApp (notif ke admin)
+  ↓
 Admin
-   ↓
-[Generate Laporan + Dashboard]
+  ↓
+[Laporan & Dashboard Visual]
 ```
 
 ---
