@@ -4,7 +4,7 @@
     <div class="py-10 bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
         <div class="max-w-7xl mx-auto px-6 lg:px-8 space-y-8">
       
-      
+     <!-- 
         <div class="mb-4 flex items-center space-x-2">
             <form method="GET" action="{{ route('laporan.download') }}">
                 <label for="month" class="mr-2 font-medium"> Periode:</label>
@@ -20,7 +20,7 @@
                 </button>
             </form>
         </div>
-
+    --
 
           <!-- Statistik Cards -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -82,23 +82,54 @@
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-6">
                 <!-- Grafik Status Verifikasi -->
                 <div class="bg-white rounded-2xl p-6 shadow-md border border-gray-100" style="max-height: 400px; overflow-y: auto;">
-                <h4 class="text-lg font-semibold text-gray-800 mb-4">🧾 Status Verifikasi</h4>
+                    <h4 class="text-lg font-semibold text-gray-800 mb-4">🧾 Status Verifikasi</h4>
                     <canvas id="verifikasiChart" height="150"></canvas>
                 </div>
 
-             <!-- Grafik Top 5 Mesin Rusak -->
-             <div class="bg-white rounded-2xl p-6 shadow-md border border-gray-100" style="max-height: 400px; overflow-y: auto;">
-                <h4 class="text-lg font-semibold text-gray-800 mb-4">⚙️ Top Mesin Rusak</h4>
-                <canvas id="mesinChart"></canvas>
-            </div>
+                
            
+                <div class="bg-white rounded-2xl p-6 shadow-md border border-gray-100" style="max-height: 400px; overflow-y: auto;">
+                <h4 class="text-lg font-semibold text-gray-800 mb-4">📌 Status Data Cacat</h4>
+                <canvas id="statusCacatChart"></canvas>
+            </div>
+            <div class="bg-white rounded-2xl p-6 shadow-md border border-gray-100 lg:col-span-2" style="max-height: 400px; overflow-y: auto;">
+                    <h4 class="text-lg font-semibold text-gray-800 mb-4">⚙️ Top Mesin Rusak</h4>
+                    <canvas id="mesinChart"></canvas>
+            </div>
 
+            <div class="bg-white rounded-2xl p-6 shadow-md border border-gray-100 lg:col-span-2" style="max-height: 400px; overflow-y: auto;">
+    <h4 class="text-lg font-semibold text-gray-800 mb-4">🤖 Prediksi Kecacatan (Regresi Logistik)</h4>
 
-            <!-- Footer -->
-            <div class="text-center text-gray-400 text-sm pt-10">
+    @if($prediksiRegresi->isEmpty())
+        <p class="text-gray-500">Belum ada data cukup untuk menghasilkan prediksi.</p>
+    @else
+    <table class="w-full text-sm">
+        <thead>
+            <tr class="border-b">
+                <th class="py-2">Jenis Cacat</th>
+                <th class="py-2">Mesin</th>
+                <th class="py-2">Probabilitas Terverifikasi</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($prediksiRegresi as $p)
+            <tr class="border-b">
+                <td class="py-1">{{ $p['jenis_cacat'] }}</td>
+                <td class="py-1">{{ $p['mesin'] }}</td>
+                <td class="py-1 font-semibold text-blue-600">{{ $p['probabilitas'] }}</td>
+            </tr>
+            @endforeach
+        </tbody>
+    </table>
+    @endif
+</div>
+
+          
+        </div>
+          <!-- Footer -->
+          <div class="text-center text-gray-400 text-sm pt-10">
                 © {{ date('Y') }} <span class="font-semibold text-indigo-600">Qual Nova QC System</span> — Developed by <span class="font-medium">Quetzal Team's</span>
             </div>
-        </div>
     </div>
 
     <!-- Chart.js Scripts -->
@@ -158,6 +189,7 @@
                 }]
             },
             options: {
+                indexAxis: 'x', 
                 responsive: true,
                 plugins: { legend: { display: false }},
                 scales: {
@@ -182,6 +214,7 @@ const ctxVerifikasi = document.getElementById('verifikasiChart').getContext('2d'
                 }]
             },
             options: {
+                indexAxis: 'y', 
                 responsive: true,
                 maintainAspectRatio: false,
                 scales: {
@@ -261,6 +294,39 @@ const ctxVerifikasi = document.getElementById('verifikasiChart').getContext('2d'
         });
 
 
+        const ctxStatusCacat = document.getElementById('statusCacatChart').getContext('2d');
+
+new Chart(ctxStatusCacat, {
+    type: 'bar',
+    data: {
+        labels: @json($statusLabels),
+        datasets: [{
+            label: 'Jumlah',
+            data: @json($statusTotals),
+            backgroundColor: ['#F59E0B', '#22C55E','#3B82F6', '#EF4444'],
+            borderColor: ['#16A34A', '#D97706', '#B91C1C', '#1D4ED8'],
+            borderWidth: 1,
+            borderRadius: 5
+        }]
+    },
+    options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                beginAtZero: true,
+                title: { display: true, text: 'Jumlah Data' }
+            },
+            x: {
+                title: { display: true, text: 'Status' }
+            }
+        },
+        plugins: {
+            legend: { display: false }
+        }
+    }
+});
         function updateStatusSistem() {
             fetch('/dashboard/status-sistem')
                 .then(res => res.json())
