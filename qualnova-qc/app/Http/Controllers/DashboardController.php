@@ -91,6 +91,67 @@ class DashboardController extends Controller
         return $status;
     }
     
+    // =============================================
+// 🔮  F U N G S I   R E G R E S I   L O G I S T I K
+// =============================================
+private function prediksiRegresiLogistik()
+{
+    // 1️⃣ Ambil data training
+    $dataset = DataCacat::join('verifikasi', 'data_cacat.id_cacat', '=', 'verifikasi.id_cacat')
+        ->select('data_cacat.id_jenis', 'data_cacat.lokasi_mesin', 'verifikasi.valid')
+        ->get();
+
+    if ($dataset->count() < 3) {
+        return collect(); // terlalu sedikit data
+    }
+
+    // 2️⃣ Fitur kategori → angka
+    $jenisMap = JenisCacat::pluck('id_jenis')->flip()->map(fn($i) => $i + 1)->toArray();
+    $mesinMap = DataCacat::pluck('lokasi_mesin')->unique()->flip()->map(fn($i) => $i + 1)->toArray();
+
+    $training = collect();
+
+    foreach ($dataset as $row) {
+        $training->push([
+            'x1' => $jenisMap[$row->id_jenis] ?? 0,
+            'x2' => $mesinMap[$row->lokasi_mesin] ?? 0,
+            'y'  => $row->valid ? 1 : 0
+        ]);
+    }
+
+    // 3️⃣ Hitung bobot sederhana (average estimation)
+    $b0 = $training->avg('y');      // intercept
+    $b1 = $training->avg('x1');     // koef jenis
+    $b2 = $training->avg('x2');     // koef mesin
+
+    // 4️⃣ Fungsi sigmoid
+    $sigmoid = function($z) {
+        return 1 / (1 + exp(-$z));
+    };
+
+    // 5️⃣ Ambil data hari ini untuk prediksi
+    $dataHariIni = DataCacat::whereDate('created_at', today())->get();
+
+    $hasilPrediksi = collect();
+
+    foreach ($dataHariIni as $row) {
+        $x1 = $jenisMap[$row->id_jenis] ?? 0;
+        $x2 = $mesinMap[$row->lokasi_mesin] ?? 0;
+
+        $z = ($b1 * $x1) + ($b2 * $x2) + $b0;
+        $prob = $sigmoid($z);
+
+        $hasilPrediksi->push([
+            'jenis_cacat' => $row->jenis_cacat,
+            'mesin'       => $row->lokasi_mesin,
+            'probabilitas' => round($prob * 100, 2) . '%'
+        ]);
+    }
+
+    return $hasilPrediksi;
+}
+
+
     public function index()
     {
         $user = auth()->user();
@@ -198,6 +259,25 @@ class DashboardController extends Controller
         ->orderByDesc('bulan')
         ->pluck('bulan');
 
+
+            $statusRaw = DataCacat::select('status_verifikasi')
+            ->selectRaw('COUNT(*) AS total')
+            ->groupBy('status_verifikasi')
+            ->orderBy('status_verifikasi')
+            ->get();
+
+            $statusMapping = [
+            0 => 'Belum Validasi',
+            1 => 'Terverifikasi',
+            2 => 'Revisi',
+            3 => 'Rejected'
+            ];
+
+            $statusLabels = $statusRaw->map(fn($row) => $statusMapping[$row->status_verifikasi] ?? 'Tidak Diketahui');
+            $statusTotals = $statusRaw->pluck('total');
+
+            $prediksiRegresi = $this->prediksiRegresiLogistik();
+
             return view('dashboard.index', compact(
               'user',
                 'totalCacat',
@@ -215,7 +295,10 @@ class DashboardController extends Controller
                 'kinerjaMesin',
                 'jumlahCacatPerHari',
                 'statusSistem',
-                'bulanTersedia'
+                'bulanTersedia',
+                'statusLabels',
+                'statusTotals',
+                'prediksiRegresi'
             ));
 
     }
