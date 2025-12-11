@@ -3,19 +3,21 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Hash;
-use App\Models\User; // <── Tambahkan ini
+use App\Models\User;
 
 class SuperAdminSeeder extends Seeder
 {
     public function run(): void
     {
-        User::create([
-            'name' => 'Qual Nova | Super Admin',
-            'username' => 'superadmin', // <── Pastikan kolom ini ada
-            'email' => 'superadmin@qualnova.team',
-            'password' => Hash::make('QualNovaSecure'),
-            'role' => 'super_admin',
-        ]);
+        User::updateOrCreate(
+            ['email' => 'superadmin@qualnova.team'],
+            [
+                'name' => 'Qual Nova | Super Admin',
+                'username' => 'superadmin',
+                'password' => 'QualNovaSecure',
+                'role' => 'super_admin',
+                'email_verified_at' => now(),
+            ]
+        );
     }
 }
