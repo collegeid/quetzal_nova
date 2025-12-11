@@ -3,38 +3,46 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 
 class UserSeeder extends Seeder
 {
     public function run(): void
     {
-        User::create([
-            'name' => 'Supervisor Produksi',
-            'username' => 'supervisor',
-            'email' => 'supervisor@qualnova.team',
-            'password' => Hash::make('QualNovaSecure'),
-            'role' => 'manager_produksi',
-            'whatsapp' => '62823276328633', // ✅ ditambahkan
-        ]);
+        User::updateOrCreate(
+            ['email' => 'supervisor@qualnova.team'],
+            [
+                'name' => 'Supervisor Produksi',
+                'username' => 'supervisor',
+                'password' => 'QualNovaSecure',
+                'role' => 'manager_produksi',
+                'whatsapp' => '62823276328633',
+                'email_verified_at' => now(),
+            ]
+        );
 
-        User::create([
-            'name' => 'Petugas QC',
-            'username' => 'qc',
-            'email' => 'qc@qualnova.team',
-            'password' => Hash::make('QualNovaSecure'),
-            'role' => 'petugas_qc',
-            'whatsapp' => '62823276328633',
-        ]);
+        User::updateOrCreate(
+            ['email' => 'qc@qualnova.team'],
+            [
+                'name' => 'Petugas QC',
+                'username' => 'qc',
+                'password' => 'QualNovaSecure',
+                'role' => 'petugas_qc',
+                'whatsapp' => '62823276328633',
+                'email_verified_at' => now(),
+            ]
+        );
 
-        User::create([
-            'name' => 'Operator Produksi',
-            'username' => 'operator',
-            'email' => 'operator@qualnova.team',
-            'password' => Hash::make('QualNovaSecure'),
-            'role' => 'operator_produksi',
-            'whatsapp' => '62823276328633',
-        ]);
+        User::updateOrCreate(
+            ['email' => 'operator@qualnova.team'],
+            [
+                'name' => 'Operator Produksi',
+                'username' => 'operator',
+                'password' => 'QualNovaSecure',
+                'role' => 'operator_produksi',
+                'whatsapp' => '62823276328633',
+                'email_verified_at' => now(),
+            ]
+        );
     }
 }

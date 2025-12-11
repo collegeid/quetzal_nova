@@ -21,7 +21,11 @@ return new class extends Migration
             $table->string('foto_bukti')->nullable();
             $table->boolean('status_verifikasi')->default(false);
             $table->foreignId('id_user')->constrained('users', 'id')->onDelete('cascade');
-            $table->foreignId('id_jenis')->constrained('jenis_cacat', 'id_jenis')->onDelete('cascade');
+            $table->unsignedBigInteger('id_jenis');
+            $table->foreign('id_jenis')
+                ->references('id_jenis')
+                ->on('jenis_cacat')
+                ->onDelete('cascade');
             $table->timestamps();
         });
         
