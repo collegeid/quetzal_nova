@@ -4,7 +4,7 @@
     <div class="py-10 bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
         <div class="max-w-7xl mx-auto px-6 lg:px-8 space-y-8">
       
-     <!-- 
+    
         <div class="mb-4 flex items-center space-x-2">
             <form method="GET" action="{{ route('laporan.download') }}">
                 <label for="month" class="mr-2 font-medium"> Periode:</label>
@@ -20,7 +20,7 @@
                 </button>
             </form>
         </div>
-    --
+
 
           <!-- Statistik Cards -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
