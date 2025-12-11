@@ -22,7 +22,7 @@ Sistem berbasis web untuk mencatat, memverifikasi, dan melaporkan data kecacatan
 | **User**               | Manajemen pengguna, peran, dan WhatsApp ID                               | `/users`         | **Rizal Maulana**                    | ☐ In Progress |
 | **DataCacat**          | CRUD data kecacatan kain                                                 | `/data-cacat`    | **Rifqii Fauzi Anwar**               | ☐ In Progress |
 | **Verifikasi**         | Proses validasi & konfirmasi data cacat                                  | `/verifikasi`    | **Fajri Lukman**                     | ☐ In Progress |
-| **Laporan**            | Rekap data, perhitungan, dan export PDF/Excel                            | `/laporan`       | **Rizal Maulana** & **Fajri Lukman** | ☐ Planned     |
+| **Laporan**            | Rekap data, perhitungan, dan export PDF/Excel                            | `/laporan`       | **Rizal Maulana**                     | ☐ Planned     |
 | **Dashboard**          | Visualisasi statistik data cacat dan kinerja mesin                       | `/dashboard`     | **Febriansah Dirgantara**            | ✅ Done        |
 | **Notification Queue** | Antrian pengiriman pesan WhatsApp otomatis (via Fonnte API atau sejenis) | `/notifications` | **Febriansah Dirgantara**            | ✅ Done        |
 
