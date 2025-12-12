@@ -19,10 +19,10 @@ Sistem berbasis web untuk mencatat, memverifikasi, dan melaporkan data kecacatan
 | Modul                  | Deskripsi                                                                | Route Prefix     | Penanggung Jawab                     | Status        |
 | ---------------------- | ------------------------------------------------------------------------ | ---------------- | ------------------------------------ | ------------- |
 | **Auth**               | Login, logout, dan setup awal super admin                                | `/auth`          | **Febriansah Dirgantara**            | ✅ Done        |
-| **User**               | Manajemen pengguna, peran, dan WhatsApp ID                               | `/users`         | **Rizal Maulana**                    | ☐ In Progress |
+| **User**               | Manajemen pengguna, peran, dan WhatsApp ID                               | `/users`         | **Rizal Maulana**                    | ✅ Done  |
 | **DataCacat**          | CRUD data kecacatan kain                                                 | `/data-cacat`    | **Rifqii Fauzi Anwar**               | ✅ Done|
 | **Verifikasi**         | Proses validasi & konfirmasi data cacat                                  | `/verifikasi`    | **Fazri Lukman**                     | ✅ Done|
-| **Laporan**            | Rekap data, perhitungan, dan export PDF/Excel                            | `/laporan`       | **Rizal Maulana**                     | ☐ Planned     |
+| **Laporan**            | Rekap data, perhitungan, dan export PDF/Excel                            | `/laporan`       | **Rizal Maulana**                     | ✅ Done     |
 | **Dashboard**          | Visualisasi statistik data cacat dan kinerja mesin                       | `/dashboard`     | **Febriansah Dirgantara**            | ✅ Done        |
 | **Notification Queue** | Antrian pengiriman pesan WhatsApp otomatis (via Fonnte API atau sejenis) | `/notifications` | **Febriansah Dirgantara**            | ✅ Done        |
 
