@@ -1,447 +1,413 @@
 <x-app-layout>
-<div class="py-12" x-data="{ openCreate: false, openEdit: false, selected: null, formData: { name: '', username: '', email: '', role: '', password: '', password_confirmation: '' } }">
+    <div class="py-12 min-h-screen" x-data="{ 
+        openCreate: false, 
+        openEdit: false, 
+        selected: null, 
+        formData: { name: '', username: '', email: '', role: '', password: '', password_confirmation: '' } 
+    }">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            
-   <!-- Flash Message -->
-   @if (session('success'))
-                <div 
-                    x-data="{ show: true }" 
-                    x-show="show"
-                    x-transition 
-                    class="mb-4 flex items-center justify-between bg-green-100 border border-green-300 text-green-800 px-4 py-3 rounded-lg shadow-sm"
-                >
-                    <div class="flex items-center space-x-2">
-                        <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                  d="M9 12l2 2l4 -4m0 6a9 9 0 1 1 -9 -9a9 9 0 0 1 9 9z" />
+
+            @if (session('success'))
+            <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 5000)" 
+                 class="mb-6 p-5 bg-emerald-50 border-l-4 border-emerald-500 text-emerald-800 rounded-r-2xl flex items-center justify-between shadow-sm animate-pulse">
+                <div class="flex items-center">
+                    <div class="bg-emerald-500 p-1.5 rounded-full mr-3 shadow-sm">
+                        <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
                         </svg>
-                        <span class="font-medium">{{ session('success') }}</span>
                     </div>
-                    <button @click="show = false" class="text-green-700 hover:text-green-900">✕</button>
+                    <span class="font-bold tracking-tight">{{ session('success') }}</span>
                 </div>
+                <button @click="show = false" class="text-emerald-400 hover:text-emerald-600 font-black">✕</button>
+            </div>
             @endif
 
             @if ($errors->any())
-                <div class="mb-4 p-4 bg-red-100 text-red-700 rounded">
-                    <ul class="list-disc list-inside">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
+            <div class="mb-6 p-5 bg-rose-50 border-l-4 border-rose-500 text-rose-800 rounded-r-2xl shadow-sm">
+                <div class="flex items-center mb-2">
+                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" /></svg>
+                    <span class="font-black uppercase italic tracking-widest text-xs">Terjadi Kesalahan!</span>
                 </div>
-            @endif
-<!-- Panduan Penggunaan Halaman -->
-<div 
-    id="pageGuide" 
-    x-data="{ show: true }"
-    x-show="show"
-    x-transition
-    class="mb-4 bg-blue-100 border border-blue-300 text-blue-800 px-4 py-3 rounded-lg shadow-sm relative"
->
-    <div class="flex items-start gap-2">
-        <svg class="w-5 h-5 text-blue-600 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z" />
-        </svg>
-        <div>
-            <h3 class="font-semibold text-blue-900 mb-1">Panduan Penggunaan Halaman</h3>
-            <ul class="list-disc list-inside text-sm leading-relaxed">
-                <li>Halaman ini digunakan untuk mengelola dan memverifikasi data cacat produksi.</li>
-                <li>Gunakan tombol <strong>+ Tambah Data</strong> untuk menambahkan laporan baru.</li>
-                <li>Tombol <strong>Edit</strong> untuk memperbarui data sebelum diverifikasi.</li>
-                <li>Tombol <strong>Update Status</strong> hanya untuk petugas_qc dalam memvalidasi data.</li>
-                <li>Tombol <strong>Preview</strong> digunakan untuk melihat data yang sudah terverifikasi.</li>
-                <li>Tombol <strong>Hapus</strong> hanya tersedia untuk manager_produksi dan Super manager_produksi.</li>
-            </ul>
-            <div class="mt-3 border-t border-blue-200 pt-2">
-                <h4 class="font-semibold text-blue-900 mb-1">🔑 Hak Akses Berdasarkan Role:</h4>
-                <ul class="list-disc list-inside text-sm leading-relaxed">
-                    @php $role = Auth::user()->role; @endphp
-
-                    @if($role === 'operator_produksi')
-                        <li><strong>Operator Produksi:</strong> Dapat menambah dan mengedit data cacat sebelum diverifikasi.</li>
-                        <li>Tidak dapat memverifikasi atau menghapus data.</li>
-                    @elseif($role === 'petugas_qc')
-                        <li><strong>Petugas QC:</strong> Hanya dapat mengubah status verifikasi data.</li>
-                        <li>Tidak dapat menambah atau menghapus data.</li>
-                    @elseif($role === 'manager_produksi')
-                        <li><strong>Manager Produksi/Supervisor:</strong> Dapat menambah, mengedit, menghapus, dan memverifikasi data.</li>
-                        <li>Tidak dapat mengubah data yang sudah terverifikasi.</li>
-                    @elseif($role === 'super_admin')
-                        <li><strong>Super Admin:</strong> Memiliki akses penuh untuk semua tindakan di halaman ini.</li>
-                    @endif
+                <ul class="list-disc list-inside text-sm font-bold opacity-80">
+                    @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                    @endforeach
                 </ul>
             </div>
-        </div>
-    </div>
-    <button 
-        @click="show = false; localStorage.setItem('hideGuide', true)" 
-        class="absolute top-2 right-3 text-blue-800 hover:text-blue-900 text-xl leading-none"
-    >
-        ×
-    </button>
-</div>
-
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-                
-            <div class="flex justify-between items-center mb-6">
-                
-            <h2 class="text-2xl font-semibold text-gray-800">Manajemen Data Cacat</h2>
-            @if(in_array(Auth::user()->role, ['super_admin', 'manager_produksi', 'operator_produksi']))
-                <button onclick="openModal('createModal')" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
-                    + Tambah Data
-                </button>
             @endif
 
-        </div>
-
-        
-        <div class="overflow-x-auto">
-            
-         <table class="min-w-full border border-gray-200 rounded-lg overflow-hidden bg-white">
-           <thead class="bg-gray-100 text-gray-700">
-                    <tr>
-                        <th class="px-4 py-2">Tanggal</th>
-                        <th class="px-4 py-2">Shift</th>
-                        <th class="px-4 py-2">Lokasi Mesin</th>
-                        <th class="px-4 py-2">Jenis Kain</th>
-                        <th class="px-4 py-2">Jenis Cacat</th>
-                        <th class="px-4 py-2">Status</th>
-                        <th class="px-4 py-2">Waktu Verifikasi</th> 
-                        <th class="px-4 py-2">Aksi</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-200">
-                @foreach ($dataCacat as $item)
-                <tr class="hover:bg-gray-50 transition">
-                <td class="px-4 py-2">{{ $item->tanggal }}</td>
-                            <td class="px-6 py-4 text-sm text-gray-800">{{ $item->shift }}</td>
-                            <td class="px-6 py-4 text-sm text-gray-800">{{ $item->lokasi_mesin }}</td>
-                            <td class="px-6 py-4 text-sm text-gray-800">{{ $item->jenis_kain ?? '-' }}</td>
-                            <td class="px-6 py-4 text-sm text-gray-800">
-                                {{ $item->jenisCacat->nama_jenis ?? '-' }}
-                            </td>
-                            <td class="px-4 py-2">
-                                @php
-                                    $status = $item->status_verifikasi;
-                                @endphp
-
-                                @if ($status == 1)
-                                    <span class="bg-green-100 text-green-700 px-2 py-1 rounded text-sm">
-                                        Terverifikasi
-                                    </span>
-
-                                @elseif ($status == 2)
-                                    <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-sm">
-                                        Revision
-                                    </span>
-
-                                @elseif ($status == 3)
-                                    <span class="bg-red-100 text-red-700 px-2 py-1 rounded text-sm">
-                                        Rejected
-                                    </span>
-
-                                @else
-                                    <span class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded text-sm">
-                                        Belum Valid
-                                    </span>
-                                @endif
-                            </td>
-
-                            <td class="px-4 py-2 text-sm text-gray-800">
-                            @if($item->status_verifikasi)
-                                    @if($item->verifikasi && $item->verifikasi->tanggal_verifikasi != '0000-00-00 00:00:00')
-                                        {{ \Carbon\Carbon::parse($item->verifikasi->tanggal_verifikasi)->format('d/m/Y H:i') }}
-                                    @else
-                                        <span class="text-gray-400 italic">Belum diverifikasi</span>
-                                    @endif
-                                @else
-                                    <span class="text-gray-400 italic">Belum diverifikasi</span>
-                                @endif
-
-                            </td>
-
-                        <td class="px-4 py-2 flex gap-2">
-    @php
-        $role = Auth::user()->role;
-        $verified = $item->status_verifikasi;
-    @endphp
-
-    @if($verified)
-    <button type="button"
-        onclick='openPreviewModal(@json($item))'
-        class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded">
-    Preview
-</button>
-
-    @else
-        @if(in_array($role, ['operator_produksi', 'manager_produksi', 'super_admin']))
-            <button type="button" onclick='openEditModal(@json($item))'
-                    class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded">
-                Edit
-            </button>
-        @elseif($role === 'petugas_qc')
-            <button type="button" onclick='openEditModal(@json($item))'
-                    class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded">
-                Update Status
-            </button>
-        @endif
-    @endif
-
-    @if(in_array($role, ['manager_produksi', 'super_admin']))
-        <form id="deleteForm-{{ $item->id_cacat }}" action="{{ route('data-cacat.destroy', $item->id_cacat) }}" method="POST">
-            @csrf
-            @method('DELETE')
-            <button type="button" onclick="confirmDelete({{ $item->id_cacat }})"
-                    class="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700">Hapus</button>
-        </form>
-    @endif
-</td>
-
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
-   <!-- Modal Tambah -->
-<div id="createModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center">
-    <div class="bg-white p-6 rounded-lg w-96 shadow-lg">
-        <h3 class="text-lg font-semibold mb-4">Tambah Data Cacat</h3>
-        <form id="createForm" method="POST" action="{{ route('data-cacat.store') }}" enctype="multipart/form-data">
-            @csrf
-            <div class="space-y-3">
-            <input 
-                    type="date" 
-                    name="tanggal" 
-                    class="w-full border rounded p-2" 
-                    required 
-                    max="{{ date('Y-m-d') }}"
-                    value="{{ date('Y-m-d') }}"
-
-             >          
-                <input type="text" name="shift" placeholder="Shift" class="w-full border rounded p-2" required>
-                <input type="text" name="lokasi_mesin" placeholder="Lokasi Mesin" class="w-full border rounded p-2" required>
-                <input type="text" name="jenis_kain" placeholder="Jenis Kain" class="w-full border rounded p-2">
-
-                <select name="id_jenis" class="w-full border rounded p-2" required>
-                    <option value="">Pilih Jenis Cacat</option>
-                    @foreach($jenisCacat as $j)
-                        <option value="{{ $j->id_jenis }}">{{ $j->nama_jenis }}</option>
-                    @endforeach
-                </select>
-
-                <div>
-                    <input type="file" name="foto_bukti" id="create_foto_bukti" class="w-full border rounded p-2" accept="image/*" onchange="previewImage(event, 'createPreview')">
-                    <img id="createPreview" src="#" alt="Preview" class="hidden mt-2 rounded border max-h-40 mx-auto">
+            <div id="pageGuide" x-data="{ show: localStorage.getItem('hideDataCacatGuide') !== 'true' }" x-show="show" 
+                 x-transition class="mb-8 bg-blue-50/50 border border-blue-100 text-blue-900 px-8 py-6 rounded-custom shadow-sm relative backdrop-blur-sm" x-cloak>
+                <div class="flex items-start gap-4">
+                    <div class="p-3 bg-blue-600 rounded-2xl shadow-lg shadow-blue-200">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z" /></svg>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="font-black text-lg uppercase italic tracking-tight mb-2">Pusat Informasi Data Quality Control</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-bold opacity-80">
+                            <ul class="list-disc list-inside space-y-1">
+                                <li>Gunakan tombol <strong class="text-blue-700">+ TAMBAH DATA</strong> untuk laporan baru.</li>
+                                <li><strong>Edit:</strong> Hanya sebelum data diverifikasi.</li>
+                                <li><strong>Update Status:</strong> Khusus untuk verifikator QC.</li>
+                            </ul>
+                            <div class="bg-blue-100/50 p-3 rounded-xl border border-blue-200">
+                                <h4 class="font-black mb-1 flex items-center gap-2"><span>🔑</span> STATUS ROLE:</h4>
+                                @php $role = Auth::user()->role; @endphp
+                                @if($role === 'operator_produksi') Operator Produksi (Input & Edit) @elseif($role === 'petugas_qc') Petugas QC (Verifikator Status) @elseif($role === 'manager_produksi') Manager/Supervisor (Full Access) @else Super Admin (Root Access) @endif
+                            </div>
+                        </div>
+                    </div>
                 </div>
-
-                <div class="flex justify-end gap-2 pt-2">
-                    <button type="button" onclick="closeModal('createModal')" class="px-3 py-1 border rounded">Batal</button>
-                    <button type="submit" class="bg-blue-600 text-white px-3 py-1 rounded">Simpan</button>
-                </div>
+                <button @click="show = false; localStorage.setItem('hideDataCacatGuide', 'true')" class="absolute top-6 right-6 text-blue-400 hover:text-blue-600 transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
             </div>
-        </form>
-    </div>
-</div>
 
-<!-- Modal Preview -->
-<div id="previewModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center">
-    <div class="bg-white p-6 rounded-lg w-96 shadow-lg">
-        <h3 class="text-lg font-semibold mb-4">Detail Data Cacat</h3>
-        <div class="space-y-2">
-            <p><strong>Tanggal:</strong> <span id="preview_tanggal"></span></p>
-            <p><strong>Shift:</strong> <span id="preview_shift"></span></p>
-            <p><strong>Lokasi Mesin:</strong> <span id="preview_lokasi_mesin"></span></p>
-            <p><strong>Jenis Kain:</strong> <span id="preview_jenis_kain"></span></p>
-            <p><strong>Jenis Cacat:</strong> <span id="preview_jenis_cacat"></span></p>
-            <div>
-                <strong>Foto Bukti:</strong>
-                <img id="preview_foto" src="#" class="hidden mt-2 rounded border max-h-40 mx-auto">
-            </div>
-        </div>
-        <div class="flex justify-end pt-4">
-            <button type="button" onclick="closeModal('previewModal')" class="px-3 py-1 border rounded hover:bg-gray-100">Tutup</button>
-        </div>
-    </div>
-</div>
+            <div class="bg-white shadow-premium rounded-custom overflow-hidden border border-gray-50">
+                <div class="px-10 py-8 border-b border-gray-50 flex flex-col md:flex-row justify-between items-center gap-6">
+                    <div>
+                        <h2 class="text-3xl font-black text-gray-900 tracking-tight italic uppercase leading-none">
+                            Manajemen <span class="text-indigo-600">Data Cacat</span>
+                        </h2>
+                        <div class="flex items-center gap-2 mt-2">
+                            <span class="h-1.5 w-10 bg-indigo-600 rounded-full"></span>
+                            <p class="text-[10px] text-gray-400 font-black uppercase tracking-[0.3em]">Monitoring Quality Assurance</p>
+                        </div>
+                    </div>
 
-<!-- Modal Edit -->
-<div id="editModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center">
-    <div class="bg-white p-6 rounded-lg w-96 shadow-lg">
-        <h3 class="text-lg font-semibold mb-4">Edit Data Cacat</h3>
-        <form id="editForm" method="POST" enctype="multipart/form-data">
-            @csrf @method('PUT')
-            @php $role = Auth::user()->role; @endphp
-            <div class="space-y-3">
-                <input type="date" id="edit_tanggal" name="tanggal" class="w-full border rounded p-2" required max="{{ date('Y-m-d') }}"
-                  
-                       {{ $role === 'petugas_qc' ? 'readonly' : '' }}>
-                
-                <input type="text" id="edit_shift" name="shift" class="w-full border rounded p-2" required
-                       {{ $role === 'petugas_qc' ? 'readonly' : '' }}>
-                
-                <input type="text" id="edit_lokasi_mesin" name="lokasi_mesin" class="w-full border rounded p-2" required
-                       {{ $role === 'petugas_qc' ? 'readonly' : '' }}>
-                
-                <input type="text" id="edit_jenis_kain" name="jenis_kain" class="w-full border rounded p-2"
-                       {{ $role === 'petugas_qc' ? 'readonly' : '' }}>
-
-                <select id="edit_id_jenis" name="id_jenis" class="w-full border rounded p-2" required
-                        {{ $role === 'petugas_qc' ? 'disabled' : '' }}>
-                    <option value="">Pilih Jenis Cacat</option>
-                    @foreach($jenisCacat as $j)
-                        <option value="{{ $j->id_jenis }}">{{ $j->nama_jenis }}</option>
-                    @endforeach
-                </select>
-
-                <div>
-                    <input type="file" name="foto_bukti" id="edit_foto_bukti" class="w-full border rounded p-2" accept="image/*"
-                           onchange="previewImage(event, 'editPreview')" {{ $role === 'petugas_qc' ? 'disabled' : '' }}>
-                    <img id="editPreview" src="#" alt="Preview" class="hidden mt-2 rounded border max-h-40 mx-auto">
-                </div>
-
-                {{-- Untuk petugas_qc, manager_produksi, dan Super manager_produksi, tampilkan dropdown status --}}
-                            @if(in_array($role, ['petugas_qc', 'manager_produksi', 'super_admin']))
-                                <select name="status_verifikasi" class="w-full border rounded p-2" required>
-                                    <option value="0" {{ isset($data) && $data->status_verifikasi == 0 ? 'selected' : '' }}>Belum Terverifikasi</option>
-                                    <option value="1" {{ isset($data) && $data->status_verifikasi == 1 ? 'selected' : '' }}>Terverifikasi</option>
-                                    <option value="2" {{ isset($data) && $data->status_verifikasi == 2 ? 'selected' : '' }}>Revision</option>
-                                    <option value="3" {{ isset($data) && $data->status_verifikasi == 3 ? 'selected' : '' }}>Rejected</option>
-                                </select>
-                            @endif
-
-
-                <div class="flex justify-end gap-2 pt-2">
-                    <button type="button" onclick="closeModal('editModal')" class="px-3 py-1 border rounded">Batal</button>
-                    <button type="submit"
-                            class="{{ $role === 'petugas_qc' ? 'bg-green-600' : 'bg-yellow-600' }} text-white px-3 py-1 rounded">
-                        {{ $role === 'petugas_qc' ? 'Update Status' : 'Update' }}
+                    @if(in_array(Auth::user()->role, ['super_admin', 'manager_produksi', 'operator_produksi']))
+                    <button onclick="openModal('createModal')" class="group relative inline-flex items-center px-10 py-4 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-black rounded-2xl transition-all shadow-xl shadow-indigo-100 hover:-translate-y-1 active:translate-y-0 overflow-hidden uppercase tracking-widest">
+                        <div class="absolute inset-0 w-2 bg-white/20 transition-all group-hover:w-full"></div>
+                        <svg class="w-5 h-5 mr-2 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4" /></svg>
+                        <span class="relative z-10">+ Tambah Data</span>
                     </button>
+                    @endif
+                </div>
+
+                <div class="p-10">
+                    <div class="overflow-x-auto rounded-3xl border border-gray-100 bg-gray-50/30 p-2">
+                        <table class="min-w-full border-separate border-spacing-y-3">
+                            <thead>
+                                <tr class="text-gray-400 uppercase text-[10px] font-black tracking-[0.25em]">
+                                    <th class="px-6 py-4 text-left">Info Produk</th>
+                                    <th class="px-6 py-4 text-left text-center">Shift/Mesin</th>
+                                    <th class="px-6 py-4 text-left">Jenis Kerusakan</th>
+                                    <th class="px-6 py-4 text-center">Status</th>
+                                    <th class="px-6 py-4 text-right">Tindakan</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($dataCacat as $item)
+                                <tr class="bg-white hover:bg-indigo-50/30 transition-all duration-300 group shadow-sm hover:shadow-md transform hover:-translate-y-0.5">
+                                    <td class="px-6 py-5 first:rounded-l-[1.5rem]">
+                                        <div class="flex flex-col">
+                                            <span class="text-sm font-black text-gray-800 italic uppercase tracking-tighter">{{ $item->jenis_kain ?? 'N/A' }}</span>
+                                            <span class="text-[10px] font-bold text-gray-400 flex items-center gap-1 mt-1">
+                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                                                {{ $item->tanggal }}
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-5 text-center">
+                                        <div class="flex flex-col">
+                                            <span class="text-[10px] font-black text-indigo-600 bg-indigo-50 px-3 py-1 rounded-lg border border-indigo-100 inline-block mx-auto mb-1">SHIFT {{ $item->shift }}</span>
+                                            <span class="text-[11px] font-bold text-gray-500 italic">{{ $item->lokasi_mesin }}</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-5">
+                                        <span class="text-sm font-extrabold text-gray-700 italic group-hover:text-indigo-600 transition-colors uppercase leading-none">
+                                            {{ $item->jenisCacat->nama_jenis ?? '-' }}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-5 text-center">
+                                        @php $status = $item->status_verifikasi; @endphp
+                                        @if ($status == 1)
+                                            <span class="px-4 py-1.5 rounded-xl border bg-emerald-50 text-emerald-600 border-emerald-100 text-[10px] font-black uppercase tracking-widest shadow-sm">VERIFIED</span>
+                                        @elseif ($status == 2)
+                                            <span class="px-4 py-1.5 rounded-xl border bg-blue-50 text-blue-600 border-blue-100 text-[10px] font-black uppercase tracking-widest shadow-sm">REVISION</span>
+                                        @elseif ($status == 3)
+                                            <span class="px-4 py-1.5 rounded-xl border bg-rose-50 text-rose-600 border-rose-100 text-[10px] font-black uppercase tracking-widest shadow-sm">REJECTED</span>
+                                        @else
+                                            <span class="px-4 py-1.5 rounded-xl border bg-amber-50 text-amber-600 border-amber-100 text-[10px] font-black uppercase tracking-widest shadow-sm">UNVALIDATED</span>
+                                        @endif
+                                        <p class="text-[8px] font-bold text-gray-400 mt-2 italic">
+                                            {{ $item->status_verifikasi && $item->verifikasi ? \Carbon\Carbon::parse($item->verifikasi->tanggal_verifikasi)->format('d/m/Y H:i') : 'Pending Verification' }}
+                                        </p>
+                                    </td>
+                                    <td class="px-6 py-5 text-right last:rounded-r-[1.5rem]">
+                                        <div class="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            @php $verified = $item->status_verifikasi; @endphp
+                                            @if($verified)
+                                            <button @click='openPreviewModal(@json($item))' class="p-2.5 text-blue-500 bg-blue-50 hover:bg-blue-500 hover:text-white rounded-xl transition-all shadow-sm">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                                            </button>
+                                            @else
+                                                @if(in_array($role, ['operator_produksi', 'manager_produksi', 'super_admin']))
+                                                <button @click='openEditModal(@json($item))' class="p-2.5 text-amber-500 bg-amber-50 hover:bg-amber-500 hover:text-white rounded-xl transition-all shadow-sm">
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                                                </button>
+                                                @elseif($role === 'petugas_qc')
+                                                <button @click='openEditModal(@json($item))' class="p-2.5 text-emerald-500 bg-emerald-50 hover:bg-emerald-500 hover:text-white rounded-xl transition-all shadow-sm">
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                                </button>
+                                                @endif
+                                            @endif
+
+                                            @if(in_array($role, ['manager_produksi', 'super_admin']))
+                                            <form id="deleteForm-{{ $item->id_cacat }}" action="{{ route('data-cacat.destroy', $item->id_cacat) }}" method="POST" class="inline">
+                                                @csrf @method('DELETE')
+                                                <button type="button" onclick="confirmDelete({{ $item->id_cacat }})" class="p-2.5 text-rose-500 bg-rose-50 hover:bg-rose-500 hover:text-white rounded-xl transition-all shadow-sm">
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                                                </button>
+                                            </form>
+                                            @endif
+                                        </div>
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
-        </form>
+
+            <div id="createModal" class="hidden fixed inset-0 flex items-center justify-center bg-gray-900/60 backdrop-blur-md z-[100]" x-transition.opacity>
+                <div class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-lg overflow-hidden transform transition-all p-10 border border-white">
+                    <div class="mb-8 text-center">
+                        <h3 class="text-2xl font-black text-gray-900 uppercase italic leading-none">Input <span class="text-indigo-600">Laporan Cacat</span></h3>
+                        <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-3">Data cacat harian unit produksi</p>
+                    </div>
+                    <form id="createForm" method="POST" action="{{ route('data-cacat.store') }}" enctype="multipart/form-data">
+                        @csrf
+                        <div class="space-y-4">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-[10px] font-black uppercase tracking-widest text-indigo-500 mb-2 ml-2">Tanggal Laporan</label>
+                                    <input type="date" name="tanggal" class="w-full bg-gray-50 border-none rounded-2xl px-5 py-3.5 font-bold text-gray-700 focus:ring-4 focus:ring-indigo-500/10 transition-all" required max="{{ date('Y-m-d') }}" value="{{ date('Y-m-d') }}">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-black uppercase tracking-widest text-indigo-500 mb-2 ml-2">Shift Kerja</label>
+                                    <input type="text" name="shift" placeholder="Contoh: A" class="w-full bg-gray-50 border-none rounded-2xl px-5 py-3.5 font-bold text-gray-700" required>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-[10px] font-black uppercase tracking-widest text-indigo-500 mb-2 ml-2">Lokasi Mesin</label>
+                                    <input type="text" name="lokasi_mesin" placeholder="ID Mesin" class="w-full bg-gray-50 border-none rounded-2xl px-5 py-3.5 font-bold text-gray-700" required>
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-black uppercase tracking-widest text-indigo-500 mb-2 ml-2">Jenis Kain</label>
+                                    <input type="text" name="jenis_kain" placeholder="Nama Produk" class="w-full bg-gray-50 border-none rounded-2xl px-5 py-3.5 font-bold text-gray-700">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-black uppercase tracking-widest text-indigo-500 mb-2 ml-2">Klasifikasi Cacat</label>
+                                <select name="id_jenis" class="w-full bg-gray-50 border-none rounded-2xl px-5 py-3.5 font-bold text-gray-700 appearance-none shadow-inner" required>
+                                    <option value="">Pilih Jenis Kerusakan</option>
+                                    @foreach($jenisCacat as $j) <option value="{{ $j->id_jenis }}">{{ $j->nama_jenis }}</option> @endforeach
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-black uppercase tracking-widest text-indigo-500 mb-2 ml-2">Bukti Visual (Foto)</label>
+                                <div class="relative group border-2 border-dashed border-gray-200 rounded-2xl p-4 transition-all hover:border-indigo-400">
+                                    <input type="file" name="foto_bukti" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" accept="image/*" onchange="previewImage(event, 'createPreview')">
+                                    <div class="text-center">
+                                        <svg class="w-8 h-8 text-gray-300 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                                        <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest">Klik atau Seret Foto Ke Sini</p>
+                                    </div>
+                                    <img id="createPreview" src="#" class="hidden mt-4 rounded-xl border-4 border-white shadow-lg max-h-40 mx-auto">
+                                </div>
+                            </div>
+                            <div class="flex gap-4 pt-4">
+                                <button type="button" onclick="closeModal('createModal')" class="flex-1 py-4 text-[10px] font-black text-gray-400 hover:text-gray-600 uppercase tracking-widest transition-colors">Batal</button>
+                                <button type="submit" class="flex-[2] py-4 bg-indigo-600 text-white text-[10px] font-black rounded-2xl shadow-xl shadow-indigo-100 uppercase tracking-widest transition-all hover:-translate-y-1">Simpan Laporan</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div id="previewModal" class="hidden fixed inset-0 flex items-center justify-center bg-gray-900/60 backdrop-blur-md z-[100]" x-transition.opacity>
+                <div class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-lg overflow-hidden transform transition-all p-10 border border-white text-center">
+                    <h3 class="text-2xl font-black text-indigo-600 uppercase italic leading-none mb-1">Detail <span class="text-gray-900">QC Report</span></h3>
+                    <p class="text-[9px] font-black text-gray-400 uppercase tracking-[0.4em] mb-8">Informasi Lengkap Produk Cacat</p>
+                    <div class="grid grid-cols-2 gap-6 text-left mb-8">
+                        <div class="bg-gray-50 p-4 rounded-2xl">
+                            <p class="text-[9px] font-black text-indigo-400 uppercase mb-1">Tanggal</p>
+                            <p class="text-sm font-black text-gray-700 uppercase" id="preview_tanggal"></p>
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-2xl">
+                            <p class="text-[9px] font-black text-indigo-400 uppercase mb-1">Shift</p>
+                            <p class="text-sm font-black text-gray-700 uppercase" id="preview_shift"></p>
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-2xl">
+                            <p class="text-[9px] font-black text-indigo-400 uppercase mb-1">Unit Mesin</p>
+                            <p class="text-sm font-black text-gray-700 uppercase" id="preview_lokasi_mesin"></p>
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-2xl">
+                            <p class="text-[9px] font-black text-indigo-400 uppercase mb-1">Jenis Kain</p>
+                            <p class="text-sm font-black text-gray-700 uppercase" id="preview_jenis_kain"></p>
+                        </div>
+                        <div class="col-span-2 bg-indigo-600 p-4 rounded-2xl shadow-lg shadow-indigo-100">
+                            <p class="text-[9px] font-black text-indigo-200 uppercase mb-1 tracking-widest">Klasifikasi Kerusakan</p>
+                            <p class="text-sm font-black text-white uppercase italic" id="preview_jenis_cacat"></p>
+                        </div>
+                    </div>
+                    <div class="mb-8">
+                        <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">Foto Bukti Kerusakan:</p>
+                        <img id="preview_foto" src="#" class="rounded-[1.5rem] border-4 border-gray-100 shadow-xl max-h-56 mx-auto object-cover transition-transform hover:scale-105 duration-500">
+                    </div>
+                    <button type="button" onclick="closeModal('previewModal')" class="w-full py-4 bg-gray-900 text-white text-[10px] font-black rounded-2xl uppercase tracking-[0.2em] shadow-xl hover:-translate-y-1 transition-all">Tutup Pratinjau</button>
+                </div>
+            </div>
+
+            <div id="editModal" class="hidden fixed inset-0 flex items-center justify-center bg-gray-900/60 backdrop-blur-md z-[100]" x-transition.opacity>
+                <div class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-lg overflow-hidden transform transition-all p-10 border border-white">
+                    <div class="mb-8 text-center">
+                        <h3 class="text-2xl font-black text-gray-900 uppercase italic leading-none text-amber-500">Update <span class="text-gray-900">Laporan QC</span></h3>
+                    </div>
+                    <form id="editForm" method="POST" enctype="multipart/form-data">
+                        @csrf @method('PUT')
+                        @php $role = Auth::user()->role; @endphp
+                        <div class="space-y-4">
+                            <div class="grid grid-cols-2 gap-4">
+                                <input type="date" id="edit_tanggal" name="tanggal" class="bg-gray-50 border-none rounded-2xl p-4 font-bold text-gray-700" required max="{{ date('Y-m-d') }}" {{ $role === 'petugas_qc' ? 'readonly' : '' }}>
+                                <input type="text" id="edit_shift" name="shift" class="bg-gray-50 border-none rounded-2xl p-4 font-bold text-gray-700" required {{ $role === 'petugas_qc' ? 'readonly' : '' }}>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <input type="text" id="edit_lokasi_mesin" name="lokasi_mesin" class="bg-gray-50 border-none rounded-2xl p-4 font-bold text-gray-700" required {{ $role === 'petugas_qc' ? 'readonly' : '' }}>
+                                <input type="text" id="edit_jenis_kain" name="jenis_kain" class="bg-gray-50 border-none rounded-2xl p-4 font-bold text-gray-700" {{ $role === 'petugas_qc' ? 'readonly' : '' }}>
+                            </div>
+                            <select id="edit_id_jenis" name="id_jenis" class="w-full bg-gray-50 border-none rounded-2xl p-4 font-bold text-gray-700" required {{ $role === 'petugas_qc' ? 'disabled' : '' }}>
+                                @foreach($jenisCacat as $j) <option value="{{ $j->id_jenis }}">{{ $j->nama_jenis }}</option> @endforeach
+                            </select>
+                            <div class="{{ $role === 'petugas_qc' ? 'hidden' : '' }}">
+                                <input type="file" name="foto_bukti" class="w-full bg-gray-50 border-none rounded-2xl p-4 font-bold text-gray-700" onchange="previewImage(event, 'editPreview')">
+                                <img id="editPreview" src="#" class="hidden mt-2 rounded border max-h-40 mx-auto">
+                                <span id="editPreview_error" class="hidden text-xs font-bold text-rose-500 italic mt-2 text-center block">
+                                    Preview cannot be displayed (403/404)
+                                </span>                            
+                            </div>
+                            @if(in_array($role, ['petugas_qc', 'manager_produksi', 'super_admin']))
+                            <div class="bg-indigo-50 p-5 rounded-[1.5rem] border border-indigo-100">
+                                <label class="block text-[10px] font-black uppercase text-indigo-500 mb-2 ml-1 italic tracking-widest">Otoritas Validasi Status</label>
+                                <select name="status_verifikasi" class="w-full bg-white border-none rounded-xl p-3 font-black text-indigo-700 uppercase italic text-xs tracking-tighter" required>
+                                    <option value="0">UNVALIDATED</option>
+                                    <option value="1">VERIFIED</option>
+                                    <option value="2">REVISION</option>
+                                    <option value="3">REJECTED</option>
+                                </select>
+                            </div>
+                            @endif
+                            <div class="flex gap-4 pt-4">
+                                <button type="button" onclick="closeModal('editModal')" class="flex-1 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest transition-colors">Batal</button>
+                                <button type="submit" class="flex-[2] py-4 rounded-2xl text-[10px] font-black text-white uppercase tracking-widest shadow-xl transition-all hover:-translate-y-1 {{ $role === 'petugas_qc' ? 'bg-emerald-500 shadow-emerald-100' : 'bg-amber-500 shadow-amber-100' }}">
+                                    {{ $role === 'petugas_qc' ? 'Update Status' : 'Simpan Perubahan' }}
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
     </div>
-</div>
 
+    <script>
+    function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+    function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
 
-</div>
-<script>
-function openModal(id) {
-    document.getElementById(id).classList.remove('hidden');
-}
-
-function closeModal(id) {
-    document.getElementById(id).classList.add('hidden');
-}
-
-function previewImage(event, previewId) {
-    const preview = document.getElementById(previewId);
-    const file = event.target.files[0];
-
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = () => {
-            preview.src = reader.result;
-            preview.classList.remove('hidden');
-        };
-        reader.readAsDataURL(file);
-    } else {
-        preview.src = "#";
-        preview.classList.add('hidden');
-    }
-}
-
-/**
- * 🧠 Open Edit Modal — versi fix:
- * - gunakan id_cacat sebagai primary key
- * - pastikan action URL benar
- * - tampilkan foto lama jika ada
- */
-function openEditModal(data) {
-    const modal = document.getElementById('editModal');
-    const form = document.getElementById('editForm');
-
-    const role = "{{ Auth::user()->role }}";
-    const verified = data.status_verifikasi == 1;
-
-    // Set action URL
-    form.action = `/data-cacat/${data.id_cacat}`;
-
-    // Set form values
-    document.getElementById('edit_tanggal').value = data.tanggal;
-    document.getElementById('edit_shift').value = data.shift;
-    document.getElementById('edit_lokasi_mesin').value = data.lokasi_mesin;
-    document.getElementById('edit_jenis_kain').value = data.jenis_kain || '';
-    document.getElementById('edit_id_jenis').value = data.id_jenis;
-
-    // Preview foto
-    const preview = document.getElementById('editPreview');
-    if (data.foto_bukti) {
-        preview.src = `/storage/${data.foto_bukti}`;
-        preview.classList.remove('hidden');
-    } else {
-        preview.src = "#";
-        preview.classList.add('hidden');
-    }
-
-    // Field readonly / disabled logic
-    const inputs = ['edit_tanggal', 'edit_shift', 'edit_lokasi_mesin', 'edit_jenis_kain', 'edit_id_jenis', 'edit_foto_bukti'];
-    inputs.forEach(id => {
-        const el = document.getElementById(id);
-        if (role === 'operator_produksi' && verified) el.disabled = true;
-        if (role === 'petugas_qc') el.disabled = true; // petugas_qc hanya update status
-        if (['manager_produksi','super_admin'].includes(role) && verified) el.disabled = true;
-    });
-
-    // Update tombol submit
-    const submitBtn = form.querySelector('button[type="submit"]');
-    if (role === 'petugas_qc') {
-        submitBtn.textContent = 'Update Status';
-        submitBtn.className = 'bg-green-500 text-white px-3 py-1 rounded';
-    } else if (verified) {
-        submitBtn.textContent = 'Preview';
-        submitBtn.className = 'bg-blue-500 text-white px-3 py-1 rounded cursor-not-allowed';
-        submitBtn.disabled = true;
-    } else {
-        submitBtn.textContent = 'Update';
-        submitBtn.className = 'bg-yellow-500 text-white px-3 py-1 rounded';
-        submitBtn.disabled = false;
-    }
-
-    modal.classList.remove('hidden');
-}
-
-
-
-</script>
-
-<script>
-function openPreviewModal(data) {
-
-    // Set text
-    document.getElementById('preview_tanggal').textContent = data.tanggal;
-    document.getElementById('preview_shift').textContent = data.shift;
-    document.getElementById('preview_lokasi_mesin').textContent = data.lokasi_mesin;
-    document.getElementById('preview_jenis_kain').textContent = data.jenis_kain || '-';
-    
-    // Debug jenisCacat
-    document.getElementById('preview_jenis_cacat').textContent = data.jenis_cacat?.nama_jenis || '-';
-
-    // Set foto
-    const img = document.getElementById('preview_foto');
-    if (data.foto_bukti) {
-        img.src = `/storage/${data.foto_bukti}`;
-        img.classList.remove('hidden');
-    } else {
-        img.src = '#';
+    // Helper untuk menangani reset state gambar dan pesan error
+    function resetImageState(imgId) {
+        const img = document.getElementById(imgId);
+        const errorMsg = document.getElementById(imgId + '_error');
+        
         img.classList.add('hidden');
+        if (errorMsg) errorMsg.classList.add('hidden');
+
+        // Tambahkan listener ONERROR jika belum ada
+        img.onerror = function() {
+            this.classList.add('hidden'); // Sembunyikan gambar jika gagal load
+            if (errorMsg) errorMsg.classList.remove('hidden'); // Tampilkan pesan error
+        };
     }
 
-    // Tampilkan modal
-    document.getElementById('previewModal').classList.remove('hidden');
-}
+    function previewImage(event, previewId) {
+        const preview = document.getElementById(previewId);
+        const file = event.target.files[0];
+        
+        resetImageState(previewId); // Bersihkan sisa error sebelumnya
 
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = () => { 
+                preview.src = reader.result; 
+                preview.classList.remove('hidden'); 
+            };
+            reader.readAsDataURL(file);
+        } else { 
+            preview.src = "#"; 
+        }
+    }
+
+    function openEditModal(data) {
+        const modal = document.getElementById('editModal');
+        const form = document.getElementById('editForm');
+        const role = "{{ Auth::user()->role }}";
+        const verified = data.status_verifikasi == 1;
+
+        form.action = `/data-cacat/${data.id_cacat}`;
+        document.getElementById('edit_tanggal').value = data.tanggal;
+        document.getElementById('edit_shift').value = data.shift;
+        document.getElementById('edit_lokasi_mesin').value = data.lokasi_mesin;
+        document.getElementById('edit_jenis_kain').value = data.jenis_kain || '';
+        document.getElementById('edit_id_jenis').value = data.id_jenis;
+
+        if (form.querySelector('select[name="status_verifikasi"]')) {
+            form.querySelector('select[name="status_verifikasi"]').value = data.status_verifikasi;
+        }
+
+        // --- Logika Gambar di Edit Modal ---
+        const previewId = 'editPreview';
+        resetImageState(previewId); 
+
+        if (data.foto_bukti) { 
+            const preview = document.getElementById(previewId);
+            // Gunakan path yang benar. Jika di Windows/Linux symlink sudah benar, pakai ini:
+            preview.src = `/storage/${data.foto_bukti}`; 
+            preview.classList.remove('hidden'); 
+        }
+
+        const inputs = ['edit_tanggal', 'edit_shift', 'edit_lokasi_mesin', 'edit_jenis_kain', 'edit_id_jenis'];
+        inputs.forEach(id => {
+            const el = document.getElementById(id);
+            if ((role === 'operator_produksi' && verified) || role === 'petugas_qc' || (['manager_produksi','super_admin'].includes(role) && verified)) {
+                el.disabled = true;
+                if(el.tagName === 'INPUT') el.readOnly = true;
+            } else { el.disabled = false; el.readOnly = false; }
+        });
+
+        modal.classList.remove('hidden');
+    }
+
+    function openPreviewModal(data) {
+        document.getElementById('preview_tanggal').textContent = data.tanggal;
+        document.getElementById('preview_shift').textContent = data.shift;
+        document.getElementById('preview_lokasi_mesin').textContent = data.lokasi_mesin;
+        document.getElementById('preview_jenis_kain').textContent = data.jenis_kain || '-';
+        document.getElementById('preview_jenis_cacat').textContent = data.jenis_cacat?.nama_jenis || '-';
+        
+        // --- Logika Gambar di Preview Modal ---
+        const previewId = 'preview_foto';
+        resetImageState(previewId);
+
+        if (data.foto_bukti) { 
+            const img = document.getElementById(previewId);
+            img.src = `/storage/${data.foto_bukti}`; 
+            img.classList.remove('hidden'); 
+        }
+        
+        document.getElementById('previewModal').classList.remove('hidden');
+    }
 </script>
-
-
 </x-app-layout>
