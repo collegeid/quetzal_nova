@@ -94,62 +94,75 @@ class DashboardController extends Controller
     // =============================================
 // 🔮  F U N G S I   R E G R E S I   L O G I S T I K
 // =============================================
-private function prediksiRegresiLogistik()
-{
-    // 1️⃣ Ambil data training
-    $dataset = DataCacat::join('verifikasi', 'data_cacat.id_cacat', '=', 'verifikasi.id_cacat')
-        ->select('data_cacat.id_jenis', 'data_cacat.lokasi_mesin', 'verifikasi.valid')
-        ->get();
+/**
+     * 🔮 FUNGSI REGRESI LOGISTIK (LOGIC FIX)
+     */
+    private function prediksiRegresiLogistik()
+    {
+      // Cek apakah data verifikasi benar-benar ada di database
+$dataset = DataCacat::join('verifikasi', 'data_cacat.id_cacat', '=', 'verifikasi.id_cacat')
+->select('data_cacat.id_jenis', 'data_cacat.lokasi_mesin', 'verifikasi.valid')
+->get();
 
-    if ($dataset->count() < 3) {
-        return collect(); // terlalu sedikit data
+// Jika hasil count ini masih 0 atau 1, maka tulisan "Belum ada data" akan muncul.
+if ($dataset->count() < 2) return collect();
+
+        // JIKA DATA HISTORY < 2, KITA BERIKAN FALLBACK (Agar tidak kosong terus)
+        if ($dataset->count() < 2) return collect();
+
+        // 2. Mapping kategori ke numeric (Normalisasi)
+        $jenisMap = JenisCacat::pluck('id_jenis')->flip()->toArray();
+        $mesinMap = DataCacat::distinct()->pluck('lokasi_mesin')->flip()->toArray();
+
+        $samples = [];
+        foreach ($dataset as $row) {
+            $samples[] = [
+                'x1' => (isset($jenisMap[$row->id_jenis]) ? $jenisMap[$row->id_jenis] : 0) / (count($jenisMap) ?: 1),
+                'x2' => (isset($mesinMap[$row->lokasi_mesin]) ? $mesinMap[$row->lokasi_mesin] : 0) / (count($mesinMap) ?: 1),
+                'y'  => (int)$row->valid
+            ];
+        }
+
+        // 3. Training sederhana (Gradient Descent)
+        $w1 = 0.5; $w2 = 0.5; $b = 0.1; // Inisialisasi bobot
+        $lr = 0.1; // Learning rate
+
+        for ($i = 0; $i < 50; $i++) { // 50 Iterasi
+            foreach ($samples as $s) {
+                $z = ($w1 * $s['x1']) + ($w2 * $s['x2']) + $b;
+                $prediction = 1 / (1 + exp(-max(min($z, 20), -20)));
+                $error = $s['y'] - $prediction;
+                // Update
+                $w1 += $lr * $error * $s['x1'];
+                $w2 += $lr * $error * $s['x2'];
+                $b  += $lr * $error;
+            }
+        }
+
+        // 4. Ambil 5 data TERBARU yang BELUM VALIDASI untuk diprediksi
+        $dataTarget = DataCacat::with('jenisCacat')
+            ->where('status_verifikasi', 0)
+            ->latest()
+            ->take(5)
+            ->get();
+
+        $hasilPrediksi = collect();
+        foreach ($dataTarget as $row) {
+            $x1 = (isset($jenisMap[$row->id_jenis]) ? $jenisMap[$row->id_jenis] : 0) / (count($jenisMap) ?: 1);
+            $x2 = (isset($mesinMap[$row->lokasi_mesin]) ? $mesinMap[$row->lokasi_mesin] : 0) / (count($mesinMap) ?: 1);
+
+            $z = ($w1 * $x1) + ($w2 * $x2) + $b;
+            $prob = 1 / (1 + exp(-max(min($z, 20), -20)));
+
+            $hasilPrediksi->push([
+                'jenis_cacat' => $row->jenisCacat->nama_jenis ?? 'Unknown',
+                'mesin'       => $row->lokasi_mesin,
+                'probabilitas' => round($prob * 100, 2) . '%'
+            ]);
+        }
+
+        return $hasilPrediksi;
     }
-
-    // 2️⃣ Fitur kategori → angka
-    $jenisMap = JenisCacat::pluck('id_jenis')->flip()->map(fn($i) => $i + 1)->toArray();
-    $mesinMap = DataCacat::pluck('lokasi_mesin')->unique()->flip()->map(fn($i) => $i + 1)->toArray();
-
-    $training = collect();
-
-    foreach ($dataset as $row) {
-        $training->push([
-            'x1' => $jenisMap[$row->id_jenis] ?? 0,
-            'x2' => $mesinMap[$row->lokasi_mesin] ?? 0,
-            'y'  => $row->valid ? 1 : 0
-        ]);
-    }
-
-    // 3️⃣ Hitung bobot sederhana (average estimation)
-    $b0 = $training->avg('y');      // intercept
-    $b1 = $training->avg('x1');     // koef jenis
-    $b2 = $training->avg('x2');     // koef mesin
-
-    // 4️⃣ Fungsi sigmoid
-    $sigmoid = function($z) {
-        return 1 / (1 + exp(-$z));
-    };
-
-    // 5️⃣ Ambil data hari ini untuk prediksi
-    $dataHariIni = DataCacat::whereDate('created_at', today())->get();
-
-    $hasilPrediksi = collect();
-
-    foreach ($dataHariIni as $row) {
-        $x1 = $jenisMap[$row->id_jenis] ?? 0;
-        $x2 = $mesinMap[$row->lokasi_mesin] ?? 0;
-
-        $z = ($b1 * $x1) + ($b2 * $x2) + $b0;
-        $prob = $sigmoid($z);
-
-        $hasilPrediksi->push([
-            'jenis_cacat' => $row->jenis_cacat,
-            'mesin'       => $row->lokasi_mesin,
-            'probabilitas' => round($prob * 100, 2) . '%'
-        ]);
-    }
-
-    return $hasilPrediksi;
-}
 
 
     public function index()

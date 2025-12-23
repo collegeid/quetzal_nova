@@ -244,6 +244,7 @@
                 <a href="{{ route('dashboard') }}" class="mt-8 px-8 py-3 bg-indigo-600 text-white rounded-2xl font-black text-xs tracking-widest uppercase hover:bg-indigo-700 shadow-lg shadow-indigo-100 transition-all">Kembali ke Dashboard</a>
             </div>
             @endif
+
         </div>
     </div>
 
