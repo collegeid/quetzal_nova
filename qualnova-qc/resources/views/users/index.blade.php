@@ -1,317 +1,283 @@
 <x-app-layout>
-    <div class="py-12" x-data="{ openCreate: false, openEdit: false, selected: null, formData: { name: '', username: '', email: '', role: '', password: '', password_confirmation: '' } }">
+    <div class="py-12 bg-[#f8fafc] min-h-screen">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             
-            <!-- Flash Message -->
-            @if (session('success'))
-                <div 
-                    x-data="{ show: true }" 
-                    x-show="show"
-                    x-transition 
-                    class="mb-4 flex items-center justify-between bg-green-100 border border-green-300 text-green-800 px-4 py-3 rounded-lg shadow-sm"
-                >
-                    <div class="flex items-center space-x-2">
-                        <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                  d="M9 12l2 2l4 -4m0 6a9 9 0 1 1 -9 -9a9 9 0 0 1 9 9z" />
-                        </svg>
-                        <span class="font-medium">{{ session('success') }}</span>
-                    </div>
-                    <button @click="show = false" class="text-green-700 hover:text-green-900">✕</button>
-                </div>
-            @endif
-            @if ($errors->any())
-                <div class="mb-4 p-4 bg-red-100 text-red-700 rounded">
-                    <ul class="list-disc list-inside">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
-
-
-<!-- Panduan Penggunaan Halaman -->
-<div 
-    id="pageGuide" 
-    x-data="{ show: true }"
-    x-show="show"
-    x-transition
-    class="mb-4 bg-blue-100 border border-blue-300 text-blue-800 px-4 py-3 rounded-lg shadow-sm relative"
->
-    <div class="flex items-start gap-2">
-        <svg class="w-5 h-5 text-blue-600 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z" />
-        </svg>
-        <div>
-            <h3 class="font-semibold text-blue-900 mb-1">Panduan Penggunaan Halaman</h3>
-            <ul class="list-disc list-inside text-sm leading-relaxed">
-                <li>Halaman ini digunakan untuk mengelola Role dalam Qual Nova.</li>
-                <li>Gunakan tombol <strong>+ Tambah Data</strong> untuk menambahkan Pengguna baru.</li>
-                <li>Tombol <strong>Edit</strong> untuk memperbarui Data Pengguna.</li>
-                <li>Tombol <strong>Hapus</strong> hanya tersedia untuk Super Admin.</li>
-            </ul>
-            <div class="mt-3 border-t border-blue-200 pt-2">
-                <h4 class="font-semibold text-blue-900 mb-1">🔑 Hak Akses Berdasarkan Role:</h4>
-                <ul class="list-disc list-inside text-sm leading-relaxed">
-                    @php $role = Auth::user()->role; @endphp
-                   @if($role === 'manager_produksi')
-                        <li><strong>Manager Produksi/Supervisor:</strong> Dapat menambah, mengedit Data.</li>
-                    @elseif($role === 'super_admin')
-                        <li><strong>Super Admin:</strong> Memiliki akses penuh untuk semua tindakan di halaman ini.</li>
-                    @endif
-                </ul>
-            </div>
-        </div>
-    </div>
-    <button 
-        @click="show = false; localStorage.setItem('hideGuide', true)" 
-        class="absolute top-2 right-3 text-blue-800 hover:text-blue-900 text-xl leading-none"
-    >
-        ×
-    </button>
-</div>
-
-
             @if(in_array(Auth::user()->role, ['super_admin', 'manager_produksi']))
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-                    <div class="flex justify-between items-center mb-6">
-                        <h2 class="text-2xl font-semibold text-gray-800">Daftar User</h2>
-                        @if(in_array(Auth::user()->role, ['super_admin', 'manager_produksi']))
-                            <button @click="openCreate = true" 
-                               class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 transition ease-in-out duration-150">
-                                + Tambah User
-                            </button>
-                        @endif
+            
+            <div id="pageGuide" x-data="{ show: true }" x-show="show" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 transform -translate-y-4" x-transition:enter-end="opacity-100 transform translate-y-0" class="mb-6 bg-blue-50 border border-blue-200 text-blue-800 px-6 py-4 rounded-2xl shadow-sm relative">
+                <div class="flex items-start gap-3">
+                    <div class="p-2 bg-blue-100 rounded-lg">
+                        <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-blue-900 text-lg mb-1">Panduan Penggunaan Halaman</h3>
+                        <ul class="list-disc list-inside text-sm leading-relaxed opacity-90">
+                            <li>Halaman ini digunakan untuk mengelola Role dan Pengguna dalam Qual Nova.</li>
+                            <li>Gunakan tombol <strong>+ TAMBAH USER</strong> untuk mendaftarkan akun baru ke sistem.</li>
+                            <li>Tombol <strong>Edit</strong> digunakan untuk memperbarui informasi data pengguna.</li>
+                            <li>Tombol <strong>Hapus</strong> hanya tersedia untuk Super Admin.</li>
+                        </ul>
+                        <div class="mt-4 border-t border-blue-200 pt-3">
+                            <h4 class="font-bold text-blue-900 mb-1 flex items-center gap-2"><span>🔑</span> Hak Akses Berdasarkan Role:</h4>
+                            <ul class="list-disc list-inside text-sm leading-relaxed opacity-90">
+                                @php $role = Auth::user()->role; @endphp
+                                @if($role === 'manager_produksi')
+                                    <li><strong>Manager Produksi:</strong> Dapat menambah dan mengedit Data User.</li>
+                                @elseif($role === 'super_admin')
+                                    <li><strong>Super Admin:</strong> Memiliki akses penuh (Tambah, Edit, Hapus).</li>
+                                @endif
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <button @click="show = false" class="absolute top-4 right-4 text-blue-400 hover:text-blue-600 transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+            </div>
+
+            <div class="bg-white shadow-[0_20px_50px_rgba(0,0,0,0.05)] rounded-[2rem] overflow-hidden border border-gray-100" 
+                 x-data="{ openCreate: false, openEdit: false, selected: null, formData: { name: '', username: '', email: '', role: '', whatsapp: '', password: '', password_confirmation: '' } }">
+
+                <div class="px-10 py-8 border-b border-gray-50 flex flex-col md:flex-row justify-between items-center gap-4">
+                    <div class="text-center md:text-left">
+                        <h2 class="text-3xl font-black text-gray-900 tracking-tight italic uppercase">
+                            Daftar <span class="text-indigo-600">Pengguna</span>
+                        </h2>
+                        <div class="flex items-center justify-center md:justify-start gap-2 mt-1">
+                            <span class="h-1 w-8 bg-indigo-600 rounded-full"></span>
+                            <p class="text-xs text-gray-400 font-bold uppercase tracking-widest">Manajemen Akses Karyawan</p>
+                        </div>
                     </div>
 
-                    <!-- Table -->
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full border border-gray-200 rounded-lg overflow-hidden bg-white">
-                            <thead class="bg-gray-100 text-gray-700">
-                                <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider border-b">Nama</th>
-                                    <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider border-b">Username</th>
-                                    <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider border-b">Email</th>
-                                    <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider border-b">Whatsapp</th>
-                                    <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider border-b">Role</th>
-                                    <th class="px-6 py-3 text-center text-xs font-semibold uppercase tracking-wider border-b">Aksi</th>
+                    <button @click="openCreate = true" class="group relative inline-flex items-center px-8 py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-black rounded-2xl transition-all shadow-xl shadow-indigo-200 hover:-translate-y-1 active:translate-y-0 overflow-hidden">
+                        <div class="absolute inset-0 w-3 bg-white/20 transition-all group-hover:w-full"></div>
+                        <svg class="w-5 h-5 mr-2 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4" /></svg>
+                        <span class="relative z-10">TAMBAH USER</span>
+                    </button>
+                </div>
+
+                <div class="p-10">
+                    @if (session('success'))
+                    <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 5000)" class="mb-8 p-5 bg-emerald-50 border-l-4 border-emerald-500 text-emerald-800 rounded-r-2xl flex items-center justify-between shadow-sm animate-pulse">
+                        <div class="flex items-center">
+                            <div class="bg-emerald-500 p-1 rounded-full mr-3">
+                                <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg>
+                            </div>
+                            <span class="font-bold tracking-tight">{{ session('success') }}</span>
+                        </div>
+                        <button @click="show = false" class="text-emerald-400 hover:text-emerald-600 font-bold">✕</button>
+                    </div>
+                    @endif
+
+                    <div class="overflow-hidden rounded-3xl border border-gray-100 bg-gray-50/30 p-2">
+                        <table class="min-w-full divide-y divide-gray-200 border-separate border-spacing-y-2">
+                            <thead>
+                                <tr class="text-gray-400 uppercase text-[10px] font-black tracking-[0.2em]">
+                                    <th class="px-6 py-4 text-left">Info Akun</th>
+                                    <th class="px-6 py-4 text-left">Username</th>
+                                    <th class="px-6 py-4 text-left">Kontak (WA)</th>
+                                    <th class="px-6 py-4 text-left">Role</th>
+                                    <th class="px-6 py-4 text-right">Opsi</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-gray-200">
+                            <tbody class="bg-transparent">
                                 @foreach($users as $user)
-                                    <tr class="hover:bg-gray-50 transition">
-                                        <td class="px-6 py-4 text-sm text-gray-800">{{ $user->name }}</td>
-                                        <td class="px-6 py-4 text-sm text-gray-800">{{ $user->username }}</td>
-                                        <td class="px-6 py-4 text-sm text-gray-800">{{ $user->email }}</td>
-                                        <td class="px-6 py-4 text-sm text-gray-800">{{ $user->whatsapp }}</td>
-                                        <td class="px-6 py-4 text-sm font-semibold">
-                                            @if($user->role === 'super_admin')
-                                                <span class="text-red-600">Super Admin</span>
-                                            @elseif($user->role === 'manager_produksi')
-                                                <span class="text-blue-600">Manager Produksi</span>
-                                            @elseif($user->role === 'petugas_qc')
-                                                <span class="text-purple-600">QC</span>
-                                            @elseif($user->role === 'operator_produksi')
-                                                <span class="text-purple-600">Operator Produksi</span>
-                                            @else
-                                                <span class="text-gray-600">{{ ucfirst($user->role) }}</span>
-                                            @endif
-                                        </td>
-                                        <td class="px-6 py-4 text-center">
-                                            @if(in_array(Auth::user()->role,  ['super_admin','manager_produksi']))
-                                                <div class="flex justify-center space-x-2">
-                                                    <button 
-                                                        @click="
-                                                            openEdit = true;
-                                                            selected = {{ $user->id }};
-                                                            formData = {
-                                                                name: '{{ $user->name }}',
-                                                                username: '{{ $user->username }}',
-                                                                email: '{{ $user->email }}',
-                                                                whatsapp: '{{ $user->whatsapp }}',
-                                                                role: '{{ $user->role }}',
-                                                                password: '',
-                                                                password_confirmation: ''
-                                                            };
-                                                        "
-                                                        class="inline-flex items-center px-3 py-1.5 bg-yellow-500 text-white text-xs rounded-md hover:bg-yellow-600">
-                                                        Edit
-                                                    </button>
-                                                    @if(Auth::user()->role === 'super_admin')
-                                                    @if(Auth::id() !== $user->id)
-                                                        <form id="deleteForm-{{ $user->id }}" 
-                                                            action="{{ route('users.destroy', $user->id) }}" 
-                                                            method="POST" 
-                                                            class="delete-user-form">
-                                                            @csrf
-                                                            @method('DELETE')
-                                                            <button type="button" 
-                                                                    onclick="confirmDelete({{ $user->id }})"
-                                                                    class="inline-flex items-center px-3 py-1.5 bg-red-600 text-white text-xs rounded-md hover:bg-red-700">
-                                                                Hapus
-                                                            </button>
-                                                        </form>
-                                                    @endif
-                                                    @endif
+                                <tr class="bg-white hover:bg-indigo-50/50 transition-all duration-300 shadow-sm hover:shadow-md transform hover:-translate-y-0.5">
+                                    <td class="px-6 py-5 first:rounded-l-2xl">
+                                        <div class="text-sm font-extrabold text-gray-700 tracking-tight">{{ $user->name }}</div>
+                                        <div class="text-[10px] text-gray-400 font-bold uppercase tracking-tight">{{ $user->email }}</div>
+                                    </td>
+                                    <td class="px-6 py-5 text-sm font-bold text-gray-600 italic">
+                                        {{ $user->username }}
+                                    </td>
+                                    <td class="px-6 py-5">
+                                        <span class="text-[11px] font-black text-indigo-500 bg-indigo-50/50 px-3 py-1.5 rounded-xl border border-indigo-100/50">
+                                            {{ $user->whatsapp }}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-5">
+                                        @if($user->role === 'super_admin')
+                                            <span class="px-3 py-1.5 rounded-xl bg-rose-50 text-rose-600 text-[10px] font-black uppercase tracking-wider border border-rose-100 text-center block w-fit">Super Admin</span>
+                                        @elseif($user->role === 'manager_produksi')
+                                            <span class="px-3 py-1.5 rounded-xl bg-blue-50 text-blue-600 text-[10px] font-black uppercase tracking-wider border border-blue-100 text-center block w-fit">Manager</span>
+                                        @else
+                                            <span class="px-3 py-1.5 rounded-xl bg-purple-50 text-purple-600 text-[10px] font-black uppercase tracking-wider border border-purple-100 text-center block w-fit">{{ str_replace('_', ' ', $user->role) }}</span>
+                                        @endif
+                                    </td>
+                                    <td class="px-6 py-5 text-right last:rounded-r-2xl">
+                                        <div class="flex justify-end gap-2">
+                                            <button @click="openEdit = true; selected = {{ $user->id }}; formData = { name: '{{ $user->name }}', username: '{{ $user->username }}', email: '{{ $user->email }}', whatsapp: '{{ $user->whatsapp }}', role: '{{ $user->role }}', password: '', password_confirmation: '' }" 
+                                                    class="p-2.5 text-amber-500 bg-amber-50 hover:bg-amber-500 hover:text-white rounded-xl transition-all duration-300">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
+                                            </button>
 
-                                                </div>
+                                            @if(Auth::user()->role === 'super_admin' && Auth::id() !== $user->id)
+                                            <form id="deleteForm-{{ $user->id }}" action="{{ route('users.destroy', $user->id) }}" method="POST" class="inline">
+                                                @csrf @method('DELETE')
+                                                <button type="button" onclick="confirmDelete({{ $user->id }})" class="p-2.5 text-rose-500 bg-rose-50 hover:bg-rose-500 hover:text-white rounded-xl transition-all duration-300">
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                                                </button>
+                                            </form>
                                             @endif
-                                        </td>
-                                    </tr>
+                                        </div>
+                                    </td>
+                                </tr>
                                 @endforeach
                             </tbody>
                         </table>
                     </div>
+                </div>
 
-               <!-- Modal Create -->
-<div x-show="openCreate" x-cloak class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
-    <div @click.away="openCreate = false" class="bg-white rounded-lg shadow-lg w-full max-w-lg p-6">
-        <h2 class="text-xl font-semibold text-gray-800 mb-4">Tambah User Baru</h2>
-        <form id="createForm" x-ref="createForm"  method="POST" action="{{ route('users.store') }}">
-            @csrf
-            <div class="grid grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-gray-700">Nama</label>
-                    <input type="text" name="name" x-model="formData.name" class="w-full border-gray-300 rounded-lg" required>
+                <div x-show="openCreate" x-cloak class="fixed inset-0 flex items-center justify-center bg-gray-900/40 backdrop-blur-[8px] z-[100]" x-transition.opacity>
+                    <div @click.away="openCreate = false" class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-lg overflow-hidden p-10 border border-gray-100 transform transition-all">
+                        <div class="mb-8">
+                            <h2 class="text-2xl font-black text-gray-900 uppercase italic">Tambah User Baru</h2>
+                            <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mt-1">Daftarkan akses sistem baru</p>
+                        </div>
+                        <form method="POST" action="{{ route('users.store') }}">
+                            @csrf
+                            <div class="grid grid-cols-2 gap-4 mb-8">
+                                <div class="col-span-1">
+                                    <label class="block text-[10px] font-black uppercase tracking-[0.2em] text-indigo-500 mb-2">Nama</label>
+                                    <input type="text" name="name" x-model="formData.name" class="w-full bg-gray-50 border-none rounded-2xl px-6 py-3.5 font-bold text-gray-700" required>
+                                </div>
+                                <div class="col-span-1">
+                                    <label class="block text-[10px] font-black uppercase tracking-[0.2em] text-indigo-500 mb-2">Username</label>
+                                    <input type="text" name="username" x-model="formData.username" class="w-full bg-gray-50 border-none rounded-2xl px-6 py-3.5 font-bold text-gray-700" required>
+                                </div>
+                                <div class="col-span-2">
+                                    <label class="block text-[10px] font-black uppercase tracking-[0.2em] text-indigo-500 mb-2">Email</label>
+                                    <input type="email" name="email" x-model="formData.email" class="w-full bg-gray-50 border-none rounded-2xl px-6 py-3.5 font-bold text-gray-700" required>
+                                </div>
+                                <div class="col-span-2">
+                                    <label class="block text-[10px] font-black uppercase tracking-[0.2em] text-indigo-500 mb-2">Whatsapp</label>
+                                    <input type="text" name="whatsapp" x-model="formData.whatsapp" placeholder="08xxxx" class="w-full bg-gray-50 border-none rounded-2xl px-6 py-3.5 font-bold text-gray-700" required>
+                                </div>
+                                <div class="col-span-2">
+                                    <label class="block text-[10px] font-black uppercase tracking-[0.2em] text-indigo-500 mb-2">Role</label>
+                                    <select name="role" x-model="formData.role" class="w-full bg-gray-50 border-none rounded-2xl px-6 py-3.5 font-bold text-gray-700" required>
+                                        <option value="petugas_qc">Petugas QC</option>
+                                        <option value="operator_produksi">Operator Produksi</option>
+                                        <option value="manager_produksi">Manager Produksi</option>
+                                        <option value="super_admin">Super Admin</option>
+                                    </select>
+                                </div>
+                                <div class="col-span-1">
+                                    <label class="block text-[10px] font-black uppercase tracking-[0.2em] text-indigo-500 mb-2">Password</label>
+                                    <input type="password" name="password" x-model="formData.password" class="w-full bg-gray-50 border-none rounded-2xl px-6 py-3.5 font-bold text-gray-700" required>
+                                </div>
+                                <div class="col-span-1">
+                                    <label class="block text-[10px] font-black uppercase tracking-[0.2em] text-indigo-500 mb-2">Konfirmasi</label>
+                                    <input type="password" name="password_confirmation" x-model="formData.password_confirmation" class="w-full bg-gray-50 border-none rounded-2xl px-6 py-3.5 font-bold text-gray-700" required>
+                                </div>
+                            </div>
+                            <div class="flex gap-4">
+                                <button type="button" @click="openCreate = false" class="flex-1 px-6 py-4 text-xs font-black text-gray-400 hover:text-gray-600 transition uppercase tracking-widest">Batal</button>
+                                <button type="submit" class="flex-[2] bg-indigo-600 px-6 py-4 text-white text-xs font-black rounded-2xl shadow-lg shadow-indigo-100 hover:bg-indigo-700 transition-all uppercase tracking-[0.2em]">Simpan User</button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-                <div>
-                    <label class="block text-gray-700">Username</label>
-                    <input type="text" name="username" x-model="formData.username" class="w-full border-gray-300 rounded-lg" required>
+
+                <div x-show="openEdit" x-cloak class="fixed inset-0 flex items-center justify-center bg-gray-900/40 backdrop-blur-[8px] z-[100]" x-transition.opacity>
+                    <div @click.away="openEdit = false" class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-lg overflow-hidden p-10 border border-gray-100 transform transition-all">
+                        <div class="mb-8">
+                            <h2 class="text-2xl font-black text-gray-900 uppercase italic">Edit Pengguna</h2>
+                            <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mt-1">Perbarui informasi akun</p>
+                        </div>
+                        <form :action="`/users/${selected}`" method="POST">
+                            @csrf @method('PUT')
+                            <div class="grid grid-cols-2 gap-4 mb-8">
+                                <div class="col-span-2">
+                                    <label class="block text-[10px] font-black uppercase tracking-[0.2em] text-indigo-500 mb-2">Nama Lengkap</label>
+                                    <input type="text" name="name" x-model="formData.name" class="w-full bg-gray-50 border-none rounded-2xl px-6 py-3.5 font-bold text-gray-700" required>
+                                </div>
+                                <div class="col-span-1">
+                                    <label class="block text-[10px] font-black uppercase tracking-[0.2em] text-indigo-500 mb-2">Username</label>
+                                    <input type="text" name="username" x-model="formData.username" class="w-full bg-gray-50 border-none rounded-2xl px-6 py-3.5 font-bold text-gray-700" required>
+                                </div>
+                                <div class="col-span-1">
+                                    <label class="block text-[10px] font-black uppercase tracking-[0.2em] text-indigo-500 mb-2">Whatsapp</label>
+                                    <input type="text" name="whatsapp" x-model="formData.whatsapp" class="w-full bg-gray-50 border-none rounded-2xl px-6 py-3.5 font-bold text-gray-700" required>
+                                </div>
+                                <div class="col-span-2">
+                                    <label class="block text-[10px] font-black uppercase tracking-[0.2em] text-indigo-500 mb-2">Email</label>
+                                    <input type="email" name="email" x-model="formData.email" class="w-full bg-gray-50 border-none rounded-2xl px-6 py-3.5 font-bold text-gray-700" required>
+                                </div>
+                                <div class="col-span-2">
+                                    <label class="block text-[10px] font-black uppercase tracking-[0.2em] text-indigo-500 mb-2">Role</label>
+                                    <select name="role" x-model="formData.role" class="w-full bg-gray-50 border-none rounded-2xl px-6 py-3.5 font-bold text-gray-700">
+                                        <option value="petugas_qc">Petugas QC</option>
+                                        <option value="operator_produksi">Operator Produksi</option>
+                                        <option value="manager_produksi">Manager Produksi</option>
+                                        <option value="super_admin">Super Admin</option>
+                                    </select>
+                                </div>
+                                <div class="col-span-1">
+                                    <label class="block text-[10px] font-black uppercase tracking-[0.2em] text-indigo-500 mb-2">Sandi Baru</label>
+                                    <input type="password" name="password" placeholder="Kosongkan jika tetap" class="w-full bg-gray-50 border-none rounded-2xl px-6 py-3.5 font-bold text-gray-700">
+                                </div>
+                                <div class="col-span-1">
+                                    <label class="block text-[10px] font-black uppercase tracking-[0.2em] text-indigo-500 mb-2">Konfirmasi</label>
+                                    <input type="password" name="password_confirmation" class="w-full bg-gray-50 border-none rounded-2xl px-6 py-3.5 font-bold text-gray-700">
+                                </div>
+                            </div>
+                            <div class="flex gap-4">
+                                <button type="button" @click="openEdit = false" class="flex-1 px-6 py-4 text-xs font-black text-gray-400 hover:text-gray-600 transition uppercase tracking-widest">Batal</button>
+                                <button type="submit" class="flex-[2] bg-amber-500 px-6 py-4 text-white text-xs font-black rounded-2xl shadow-lg shadow-amber-100 hover:bg-amber-600 transition-all uppercase tracking-[0.2em]">Update Akun</button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-                <div class="col-span-2">
-                    <label class="block text-gray-700">Email</label>
-                    <input type="email" name="email" x-model="formData.email" class="w-full border-gray-300 rounded-lg" required>
-                </div>
-                <div class="col-span-2">
-                    <label class="block text-gray-700">Whatsapp</label>
-                    <input type="string" placeholder="+628xxxx, 628xxxx, atau 08xxxx" name="whatsapp" x-model="formData.whatsapp" class="w-full border-gray-300 rounded-lg" required>
-                </div>
-                <div>
-                    <label class="block text-gray-700">Role</label>
-                    <select name="role" x-model="formData.role" class="w-full border-gray-300 rounded-lg" required>
-                        <option value="petugas_qc">Petugas QC</option>
-                        <option value="operator_produksi">Operator Produksi</option>
-                        <option value="manager_produksi">Manager Produksi</option>
-                        <option value="super_admin">Super Admin</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-gray-700">Password</label>
-                    <input type="password" name="password" x-model="formData.password" class="w-full border-gray-300 rounded-lg" required>
-                </div>
-                <div class="col-span-2">
-                    <label class="block text-gray-700">Konfirmasi Password</label>
-                    <input type="password" name="password_confirmation" x-model="formData.password_confirmation" class="w-full border-gray-300 rounded-lg" required>
-                </div>
+
             </div>
 
-            <div class="flex justify-end mt-4 space-x-2">
-                <button type="button" @click="openCreate = false; formData={name:'',username:'',email:'',role:'petugas_qc',password:'',password_confirmation:''}" class="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg">Batal</button>
-                <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">Simpan</button>
-            </div>
-        </form>
-    </div>
-</div>
-
-                <!-- Modal Edit -->
-<div x-show="openEdit" x-cloak class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
-    <div @click.away="openEdit = false" class="bg-white rounded-lg shadow-lg w-full max-w-lg p-6">
-        <h2 class="text-xl font-semibold text-gray-800 mb-4">Edit User</h2>
-        <form x-ref="editForm" @submit.prevent="
-            if (formData.password !== formData.password_confirmation) {
-                 Swal.fire({
-            title: 'Periksa Data Kembali',
-            text: 'Password dan Konfirmasi Password tidak sama!',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            cancelButtonText: 'Tutup'
-        });
-                return;
-            }
-             Swal.fire({
-            title: 'Update Data?',
-            text: 'Pastikan data sudah benar sebelum disimpan!',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Ya, Update!',
-            cancelButtonText: 'Batal'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                const userId = formData.id || selected;
-                if (!userId) {
-                    Swal.fire('Error', 'User ID tidak ditemukan.', 'error');
-                    return;
-                }
-
-                // ✅ Set action ke /users/{id}
-                $refs.editForm.action = `/users/${userId}`;
-                $refs.editForm.submit();
-            }
-        });
-        " method="POST">
-            @csrf
-            @method('PUT')
-
-            <div class="grid grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-gray-700">Nama</label>
-                    <input type="text" name="name" x-model="formData.name" class="w-full border-gray-300 rounded-lg" required>
-                </div>
-                <div>
-                    <label class="block text-gray-700">Username</label>
-                    <input type="text" name="username" x-model="formData.username" class="w-full border-gray-300 rounded-lg" required>
-                </div>
-                <div class="col-span-2">
-                    <label class="block text-gray-700">Email</label>
-                    <input type="email" name="email" x-model="formData.email" class="w-full border-gray-300 rounded-lg" required>
-                </div>
-                <div class="col-span-2">
-                    <label class="block text-gray-700">Whatsapp</label>
-                    <input type="string" name="whatsapp" placeholder="+628xxxx, 628xxxx, atau 08xxxx" x-model="formData.whatsapp" class="w-full border-gray-300 rounded-lg" required>
-                </div>
-                <div>
-                    <label class="block text-gray-700">Role</label>
-                    <select name="role" x-model="formData.role" class="w-full border-gray-300 rounded-lg" required>
-                    <option value="petugas_qc">Petugas QC</option>
-                        <option value="operator_produksi">Operator Produksi</option>
-                        <option value="manager_produksi">Manager Produksi</option>
-                        <option value="super_admin">Super Admin</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-gray-700">Password (opsional)</label>
-                    <input type="password" name="password" x-model="formData.password" class="w-full border-gray-300 rounded-lg">
-                </div>
-                <div class="col-span-2">
-                    <label class="block text-gray-700">Konfirmasi Password</label>
-                    <input type="password" name="password_confirmation" x-model="formData.password_confirmation" class="w-full border-gray-300 rounded-lg">
-                </div>
-            </div>
-
-            <div class="flex justify-end mt-4 space-x-2">
-                <button type="button" @click="openEdit = false" class="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg">Batal</button>
-                <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">Update</button>
-            </div>
-        </form>
-    </div>
-</div>
-
-                </div>
             @else
-                <div class="flex flex-col items-center justify-center min-h-[70vh]">
-                    <h2 class="text-3xl font-bold text-red-600 mb-3">🚫 Akses Ditolak</h2>
-                    <p class="text-gray-600 text-lg mb-6">Anda tidak memiliki izin untuk mengakses halaman ini.</p>
-                    <a href="{{ route('dashboard') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg transition">
-                        Kembali ke Dashboard
-                    </a>
+            <div class="flex flex-col items-center justify-center min-h-[60vh] bg-white rounded-[2rem] shadow-xl p-10 text-center">
+                <div class="w-24 h-24 bg-rose-50 rounded-full flex items-center justify-center mb-6">
+                    <svg class="w-12 h-12 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
                 </div>
+                <h2 class="text-3xl font-black text-gray-900 uppercase italic">Akses Ditolak</h2>
+                <p class="text-gray-500 font-bold mt-2">Anda tidak memiliki izin untuk mengelola pengguna.</p>
+                <a href="{{ route('dashboard') }}" class="mt-8 px-8 py-3 bg-indigo-600 text-white rounded-2xl font-black text-xs tracking-widest uppercase hover:bg-indigo-700 shadow-lg shadow-indigo-100 transition-all">Kembali ke Dashboard</a>
+            </div>
             @endif
         </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        function confirmDelete(id) {
+            Swal.fire({
+                title: '<span class="text-xl font-black uppercase italic">Hapus User?</span>',
+                html: '<p class="text-sm text-gray-500 font-bold uppercase tracking-tight">Akun ini akan dinonaktifkan permanen dari sistem.</p>',
+                icon: 'warning',
+                iconColor: '#f43f5e',
+                showCancelButton: true,
+                confirmButtonColor: '#f43f5e',
+                cancelButtonColor: '#94a3b8',
+                confirmButtonText: 'YA, HAPUS',
+                cancelButtonText: 'BATAL',
+                reverseButtons: true,
+                customClass: {
+                    popup: 'rounded-[2rem] border-none shadow-2xl p-8',
+                    confirmButton: 'rounded-xl font-black px-8 py-3 tracking-widest text-xs',
+                    cancelButton: 'rounded-xl font-black px-8 py-3 tracking-widest text-xs'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('deleteForm-' + id).submit();
+                }
+            })
+        }
+    </script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        [x-cloak] { display: none !important; }
+        input:focus, select:focus { outline: none !important; }
+    </style>
 </x-app-layout>
