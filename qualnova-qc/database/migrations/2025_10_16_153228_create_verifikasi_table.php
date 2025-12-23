@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id('id_verifikasi');
             $table->foreignId('id_cacat')->constrained('data_cacat', 'id_cacat')->onDelete('cascade');
             $table->foreignId('qc_id')->constrained('users', 'id')->onDelete('cascade');
-            $table->date('tanggal_verifikasi');
+            $table->datetime('tanggal_verifikasi');
             $table->boolean('valid');
             $table->timestamps();
         });
