@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Auth;
 
 class JenisCacatController extends Controller
 {
-    // ✅ List semua jenis cacat
     public function index()
     {
         $this->authorizeAccess();
@@ -16,14 +15,12 @@ class JenisCacatController extends Controller
         return view('jenis_cacat.index', compact('jenisCacat'));
     }
 
-    // ✅ Form tambah data
     public function create()
     {
         $this->authorizeAccess();
         return view('jenis_cacat.create');
     }
 
-    // ✅ Simpan data baru
     public function store(Request $request)
     {
         $this->authorizeAccess();
@@ -40,7 +37,6 @@ class JenisCacatController extends Controller
                          ->with('success', 'Jenis cacat berhasil ditambahkan!');
     }
 
-    // ✅ Form edit
     public function edit($id)
     {
         $this->authorizeAccess();
