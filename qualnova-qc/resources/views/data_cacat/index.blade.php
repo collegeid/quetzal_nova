@@ -84,6 +84,7 @@
                                     <th class="px-6 py-4 text-center">Identitas Unit</th>
                                     <th class="px-6 py-4 text-left">Klasifikasi</th>
                                     <th class="px-6 py-4 text-center">Status Verifikasi</th>
+                                    <th class="px-6 py-4 text-center">Note</th>
                                     <th class="px-6 py-4 text-right">Opsi</th>
                                 </tr>
                             </thead>
@@ -116,6 +117,43 @@
                                         @else
                                             <span class="px-4 py-1.5 rounded-xl border bg-amber-50 text-amber-600 border-amber-100 text-[10px] font-black uppercase tracking-widest shadow-sm">UNVALIDATED</span>
                                         @endif
+
+                                        <div class="mt-2 flex items-center justify-center gap-1.5 text-[9px] font-bold uppercase tracking-tighter">
+                                            @if($status == 1 && $item->verifikasi && $item->verifikasi->tanggal_verifikasi)
+                                                <i data-lucide="calendar-check" class="w-3 h-3 text-emerald-500"></i>
+                                                <span class="text-emerald-600/70 italic">Sah: {{ \Carbon\Carbon::parse($item->verifikasi->tanggal_verifikasi)->translatedFormat('d M Y, H:i') }}</span>
+                                            @elseif($status == 2 && $item->verifikasi && $item->verifikasi->tanggal_verifikasi)
+                                                <i data-lucide="calendar-x" class="w-3 h-3 text-blue-500"></i>
+                                                <span class="text-blue-600/70 italic">Dilihat: {{ \Carbon\Carbon::parse($item->verifikasi->tanggal_verifikasi)->translatedFormat('d M Y, H:i') }}</span>
+                                           
+                                                @elseif($status == 3 && $item->verifikasi && $item->verifikasi->tanggal_verifikasi)
+                                                <i data-lucide="calendar-x" class="w-3 h-3 text-rose-500"></i>
+                                                <span class="text-rose-600/70 italic">Batal: {{ \Carbon\Carbon::parse($item->verifikasi->tanggal_verifikasi)->translatedFormat('d M Y, H:i') }}</span>
+                                            @else
+                                                <i data-lucide="clock" class="w-3 h-3 text-gray-300"></i>
+                                                <span class="text-gray-400 italic">Waiting QC Review</span>
+                                            @endif
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-5 text-center">
+                                    
+
+                                        <div class="mt-2 flex items-center justify-center gap-1.5 text-[9px] font-bold uppercase tracking-tighter">
+                                            @if($status == 1 && $item->verifikasi && $item->verifikasi->tanggal_verifikasi)
+                                                <i data-lucide="calendar-check" class="w-3 h-3 text-emerald-500"></i>
+                                                <span class="text-emerald-600/70 italic">Sah: {{ \Carbon\Carbon::parse($item->verifikasi->tanggal_verifikasi)->translatedFormat('d M Y, H:i') }}</span>
+                                            @elseif($status == 2 && $item->verifikasi && $item->verifikasi->tanggal_verifikasi)
+                                                <i data-lucide="calendar-x" class="w-3 h-3 text-blue-500"></i>
+                                                <span class="text-blue-600/70 italic">Dilihat: {{ \Carbon\Carbon::parse($item->verifikasi->tanggal_verifikasi)->translatedFormat('d M Y, H:i') }}</span>
+                                           
+                                                @elseif($status == 3 && $item->verifikasi && $item->verifikasi->tanggal_verifikasi)
+                                                <i data-lucide="calendar-x" class="w-3 h-3 text-rose-500"></i>
+                                                <span class="text-rose-600/70 italic">Batal: {{ \Carbon\Carbon::parse($item->verifikasi->tanggal_verifikasi)->translatedFormat('d M Y, H:i') }}</span>
+                                            @else
+                                                <i data-lucide="clock" class="w-3 h-3 text-yellow-300"></i>
+                                                <span class="text-yellow-400 italic">Waiting QC Review</span>
+                                            @endif
+                                        </div>
                                     </td>
                                     <td class="px-6 py-5 text-right last:rounded-r-[1.5rem]">
                                         <div class="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
