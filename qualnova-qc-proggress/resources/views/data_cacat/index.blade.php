@@ -116,23 +116,10 @@
                                             <span class="px-3 py-1.5 rounded-xl bg-amber-50 text-amber-600 text-[10px] font-black uppercase tracking-wider border border-amber-100">Belum Valid</span>
                                         @endif
                                     </td>
-                                    <td class="px-6 py-5 text-right last:rounded-r-[1.5rem]">
-                                        <div class="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                            @php
-                                                $role = Auth::user()->role;
-                                                $verified = ($item->status_verifikasi == 1);
-                                            @endphp
-
-                                            @if($status == 0 || $status == 2 || $status == 3)
-                                                @if(in_array($role, ['operator_produksi', 'manager_produksi', 'super_admin']))
-                                                    <button type="button" onclick='openEditModal(@json($item))' class="p-2.5 text-amber-500 bg-amber-50 hover:bg-amber-500 hover:text-white rounded-xl transition-all shadow-sm">
-                                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
-                                                    </button>
-                                                @elseif($role === 'petugas_qc')
-                                                    <button type="button" onclick='openEditModal(@json($item))' class="p-2.5 text-emerald-500 bg-emerald-50 hover:bg-emerald-500 hover:text-white rounded-xl transition-all shadow-sm">
-                                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                                                    </button>
-                                                @endif
+                                    <td class="px-6 py-5">
+                                        <div class="text-sm font-bold text-gray-700 tracking-tight">
+                                            @if($item->status_verifikasi && $item->verifikasi && $item->verifikasi->tanggal_verifikasi != '0000-00-00 00:00:00')
+                                                {{ \Carbon\Carbon::parse($item->verifikasi->tanggal_verifikasi)->format('d/m/Y H:i') }}
                                             @else
                                                 <span class="text-[10px] text-gray-400 font-black uppercase tracking-widest italic">Belum Diverifikasi</span>
                                             @endif
@@ -207,7 +194,7 @@
                     </select>
                     <div>
                         <input type="file" name="foto_bukti" class="w-full text-xs font-bold text-gray-400" onchange="previewImage(event, 'createPreview')">
-                        <img id="createPreview" src="#" class="hidden mt-4 rounded-2xl border max-h-32 mx-auto">
+                        <img id="createPreview" src="#" class="hidden mt-4 rounded-2xl border max-h-32 mx-auto cursor-pointer hover:opacity-80 transition-opacity" onclick="openImageLightbox(this.src)">
                     </div>
                 </div>
                 <div class="flex gap-4">
@@ -264,7 +251,7 @@
                             <option value="{{ $j->id_jenis }}">{{ $j->nama_jenis }}</option>
                         @endforeach
                     </select>
-                    <img id="editPreview" src="#" class="hidden mt-4 rounded-2xl border max-h-32 mx-auto">
+                    <img id="editPreview" src="#" class="hidden mt-4 rounded-2xl border max-h-32 mx-auto cursor-pointer hover:opacity-80 transition-opacity" onclick="openImageLightbox(this.src)">
                 </div>
                 <div class="flex gap-4">
                     <button type="button" onclick="closeModal('editModal')" class="flex-1 px-6 py-4 text-xs font-black text-gray-400 hover:text-gray-600 transition uppercase tracking-widest">Batal</button>
@@ -274,10 +261,35 @@
         </div>
     </div>
 
+    <!-- Image Lightbox Modal -->
+    <div id="imageLightbox" class="hidden fixed inset-0 bg-black/90 backdrop-blur-sm z-[200] flex items-center justify-center p-4" onclick="closeImageLightbox()">
+        <div class="relative max-w-7xl max-h-[90vh] w-full h-full flex items-center justify-center">
+            <button onclick="closeImageLightbox()" class="absolute top-4 right-4 text-white hover:text-gray-300 transition-colors z-10">
+                <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+            <img id="lightboxImage" src="" class="max-w-full max-h-full object-contain rounded-lg shadow-2xl" onclick="event.stopPropagation()">
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
         function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+
+        function openImageLightbox(src) {
+            if (src && src !== '#') {
+                document.getElementById('lightboxImage').src = src;
+                document.getElementById('imageLightbox').classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        function closeImageLightbox() {
+            document.getElementById('imageLightbox').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
 
         function previewImage(event, previewId) {
             const preview = document.getElementById(previewId);
@@ -306,6 +318,7 @@
             if (data.foto_bukti) {
                 preview.src = `/storage/${data.foto_bukti}`;
                 preview.classList.remove('hidden');
+                preview.style.cursor = 'pointer';
             } else { preview.classList.add('hidden'); }
 
             const btn = document.getElementById('editSubmitBtn');
@@ -326,8 +339,14 @@
             document.getElementById('preview_lokasi_mesin').textContent = data.lokasi_mesin;
             document.getElementById('preview_jenis_cacat').textContent = data.jenis_cacat?.nama_jenis || '-';
             const img = document.getElementById('preview_foto');
-            if (data.foto_bukti) { img.src = `/storage/${data.foto_bukti}`; img.classList.remove('hidden'); }
-            else { img.classList.add('hidden'); }
+            if (data.foto_bukti) { 
+                img.src = `/storage/${data.foto_bukti}`; 
+                img.classList.remove('hidden');
+                img.style.cursor = 'pointer';
+                img.onclick = () => openImageLightbox(img.src);
+            } else { 
+                img.classList.add('hidden'); 
+            }
             openModal('previewModal');
         }
 
