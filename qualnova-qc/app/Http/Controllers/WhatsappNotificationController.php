@@ -13,105 +13,106 @@ use Carbon\Carbon;
 class WhatsappNotificationController extends Controller
 {
     /**
-     * Mengirim notifikasi WhatsApp berdasarkan status terbaru data.
+     * Konsep: Mengirim notifikasi ke SELURUH user yang memiliki nomor WhatsApp,
+     * dengan deteksi otomatis template pesan (Diri Sendiri vs Orang Lain).
      */
     public function sendUpdateNotification(DataCacat $data, string $actionBy)
     {
-        $authUser = Auth::user();
-        if (!$authUser) return;
+        $actor = Auth::user(); // User yang sedang melakukan aksi
+        if (!$actor) return;
 
-        // Persiapan Waktu
+        // Persiapan Data Waktu
         $tanggal = Carbon::parse($data->tanggal);
         $now = Carbon::now();
         $tanggalWaktu = $tanggal->setTime($now->hour, $now->minute, $now->second)->format('d/m/Y H:i:s');
 
-        // Logika Status & Note Dinamis
+        // Ambil detail status (Label & Note)
         $statusInfo = $this->getStatusDetail($data->status_verifikasi);
-        $statusLabel = $statusInfo['label'];
-        $noteStatus = $statusInfo['note'];
+        
+        // 1. Ambil SEMUA user yang terdaftar dan punya nomor WhatsApp
+        // Anda bisa memfilter role di sini jika tidak ingin dikirim ke semua user
+        $allUsers = User::whereNotNull('whatsapp')
+                        ->where('whatsapp', '!=', '')
+                        ->get();
 
-        // 1. Notifikasi untuk Pengirim (Self)
-        if ($authUser->whatsapp) {
-            $pesanSelf = "Halo *{$authUser->name}*,\n\n" .
-                "Kamu telah *{$actionBy}* data cacat dengan detail berikut:\n\n" .
-                "🆔 ID Data: #{$data->id_cacat}\n" .
-                "📅 Waktu: {$tanggalWaktu}\n" .
-                "🧵 Kain: {$data->jenis_kain}\n" .
-                "⚠️ Cacat: {$data->jenis_cacat}\n" .
-                "⚙️ Mesin: {$data->lokasi_mesin}\n\n" .
-                "--------------------------------\n" .
-                "📌 *STATUS TERBARU: {$statusLabel}*\n" .
-                "📝 *Note:* {$noteStatus}\n" .
-                "--------------------------------\n\n" .
-                "_Sistem Qual Nova Automation_";
+        foreach ($allUsers as $recipient) {
+            
+            // LOGIKA DETEKSI OTOMATIS:
+            // Jika ID recipient sama dengan ID Aktor, gunakan kata "Kamu"
+            if ($recipient->id === $actor->id) {
+                $pesan = "Halo *{$recipient->name}*,\n\n" .
+                    "Kamu telah *{$actionBy}* data cacat dengan detail berikut:\n\n" .
+                    "🆔 ID Data: #{$data->id_cacat}\n" .
+                    "📅 Waktu: {$tanggalWaktu}\n" .
+                    "🧵 Kain: {$data->jenis_kain}\n" .
+                    "⚠️ Cacat: {$data->jenis_cacat}\n" .
+                    "⚙️ Mesin: {$data->lokasi_mesin}\n\n" .
+                    "--------------------------------\n" .
+                    "📌 *STATUS TERBARU: {$statusInfo['label']}*\n" .
+                    "📝 *Note:* {$statusInfo['note']}\n" .
+                    "--------------------------------\n\n" .
+                    "_Sistem Qual Nova Automation_";
+            } 
+            // Jika ID recipient berbeda, sebutkan nama aktor yang melakukan update
+            else {
+                $pesan = "Halo *{$recipient->name}*,\n\n" .
+                    "*{$actor->name}* telah *{$actionBy}* data cacat dengan rincian:\n\n" .
+                    "🆔 ID Data: #{$data->id_cacat}\n" .
+                    "📅 Waktu: {$tanggalWaktu}\n" .
+                    "🧵 Kain: {$data->jenis_kain}\n" .
+                    "⚠️ Cacat: {$data->jenis_cacat}\n" .
+                    "⚙️ Mesin: {$data->lokasi_mesin}\n\n" .
+                    "--------------------------------\n" .
+                    "📌 *STATUS SAAT INI: {$statusInfo['label']}*\n" .
+                    "📝 *Note:* {$statusInfo['note']}\n" .
+                    "--------------------------------\n\n" .
+                    "_Silakan tinjau kembali di dashboard Qual Nova._";
+            }
 
-            $this->dispatchJob($data->id_cacat, $authUser->whatsapp, $pesanSelf);
-        }
-
-        // 2. Notifikasi untuk Recipients (QC/Manager/Admin)
-        $recipients = User::whereIn('role', ['manager_produksi', 'super_admin', 'petugas_qc'])
-            ->where('id', '!=', $authUser->id)
-            ->get();
-
-        foreach ($recipients as $user) {
-            if (!$user->whatsapp) continue;
-
-            $pesanRecipient = "Halo *{$user->name}*,\n\n" .
-                "*{$authUser->name}* telah *{$actionBy}* data cacat dengan rincian:\n\n" .
-                "🆔 ID Data: #{$data->id_cacat}\n" .
-                "📅 Waktu: {$tanggalWaktu}\n" .
-                "🧵 Kain: {$data->jenis_kain}\n" .
-                "⚠️ Cacat: {$data->jenis_cacat}\n" .
-                "⚙️ Mesin: {$data->lokasi_mesin}\n\n" .
-                "--------------------------------\n" .
-                "📌 *STATUS SAAT INI: {$statusLabel}*\n" .
-                "📝 *Note:* {$noteStatus}\n" .
-                "--------------------------------\n\n" .
-                "_Silakan tinjau kembali di dashboard Qual Nova._";
-
-            // Cek duplikasi kecuali untuk aksi verifikasi agar notifikasi tetap masuk
-            $existing = WhatsappNotification::where('nomor_tujuan', $user->whatsapp)
+            // Cek duplikasi untuk menghindari spam (kecuali untuk verifikasi penting)
+            $existing = WhatsappNotification::where('nomor_tujuan', $recipient->whatsapp)
                 ->where('id_cacat', $data->id_cacat)
-                ->latest()->first();
+                ->where('created_at', '>=', now()->subMinutes(1)) // Cegah spam dalam 1 menit
+                ->first();
 
             if (!$existing || $actionBy === 'Memverifikasi') {
-                $this->dispatchJob($data->id_cacat, $user->whatsapp, $pesanRecipient);
+                $this->dispatchJob($data->id_cacat, $recipient->whatsapp, $pesan);
             }
         }
     }
 
     /**
-     * Fungsi pembantu untuk menentukan label dan pesan tambahan berdasarkan kode status.
+     * Mapping Status, Label, dan Note khusus.
      */
     private function getStatusDetail($statusCode)
     {
         switch ((int)$statusCode) {
-            case 1: // Verified
+            case 1:
                 return [
                     'label' => '✅ TERVERIFIKASI (VALID)',
-                    'note'  => 'Data telah sah dan divalidasi oleh sistem. Terima kasih atas laporannya.'
+                    'note'  => 'Data telah sah dan divalidasi. Laporan masuk ke rekap produksi.'
                 ];
-            case 2: // Revision
+            case 2:
                 return [
                     'label' => '🔵 PERLU REVISI (NEED FIX)',
-                    'note'  => 'Terdapat ketidaksesuaian data. Mohon operator segera memeriksa dan memperbaiki input laporan.'
+                    'note'  => 'Data tidak sesuai. Mohon operator segera perbaiki detail laporan.'
                 ];
-            case 3: // Rejected
+            case 3:
                 return [
                     'label' => '❌ DITOLAK (REJECTED)',
-                    'note'  => 'Data dinyatakan tidak valid dan dibatalkan oleh pihak verifikator QC.'
+                    'note'  => 'Laporan dibatalkan/tidak valid menurut standar QC.'
                 ];
-            case 0: // Waiting / Pending
+            case 0:
             default:
                 return [
                     'label' => '⏳ MENUNGGU VERIFIKASI',
-                    'note'  => 'Laporan telah diterima. Mohon menunggu peninjauan dari petugas QC.'
+                    'note'  => 'Laporan telah diterima sistem. Menunggu peninjauan petugas QC.'
                 ];
         }
     }
 
     /**
-     * Memasukkan data ke database dan memicu Job antrean WhatsApp.
+     * Memasukkan ke database antrean notifikasi.
      */
     private function dispatchJob($idCacat, $nomor, $pesan)
     {
@@ -122,9 +123,12 @@ class WhatsappNotificationController extends Controller
                 'pesan' => $pesan,
                 'status' => 'pending',
             ]);
+            
+            // Memicu Job Background agar aplikasi tetap cepat
             SendWhatsappMessageJob::dispatch($notif);
+            
         } catch (\Exception $e) {
-            Log::error('WA Notif Error: ' . $e->getMessage());
+            Log::error('WA Notification Loop Error: ' . $e->getMessage());
         }
     }
 }
