@@ -202,7 +202,7 @@
                                         <svg class="w-10 h-10 text-gray-300 mx-auto mb-2 group-hover:text-indigo-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                                         <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest">Klik atau seret file gambar kesini</p>
                                     </div>
-                                    <img id="createPreview" src="#" class="hidden mt-4 rounded-xl border-4 border-white shadow-lg max-h-40 mx-auto">
+                                    <img id="createPreview" src="#" class="hidden mt-4 rounded-2xl border max-h-32 mx-auto cursor-pointer hover:opacity-80 transition-opacity" onclick="openImageLightbox(this.src)">
                                 </div>
                             </div>
                             <div class="flex gap-4 pt-4">
@@ -227,7 +227,7 @@
                     </div>
                     <div class="mb-8">
                         <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">Foto Bukti Kerusakan:</p>
-                        <img id="preview_foto" src="#" class="rounded-[1.5rem] border-4 border-gray-100 shadow-xl max-h-56 mx-auto object-cover transition-transform hover:scale-105 duration-500">
+                        <img id="preview_foto" src="#" class="rounded-[1.5rem] border-4 border-gray-100 shadow-xl max-h-56 mx-auto object-cover transition-transform hover:scale-105 duration-500 cursor-pointer" onclick="openImageLightbox(this.src)">
                         <span id="preview_foto_error" class="hidden text-[10px] font-black text-rose-500 italic mt-2">GAMBAR TIDAK DAPAT DITAMPILKAN (403/404)</span>
                     </div>
                     <button type="button" onclick="closeModal('previewModal')" class="w-full py-4 bg-gray-900 text-white text-[10px] font-black rounded-2xl uppercase tracking-[0.2em] shadow-xl hover:-translate-y-1 transition-all">Tutup Pratinjau</button>
@@ -312,6 +312,13 @@
                     </form>
                 </div>
             </div>
+
+            <div id="imageLightbox" class="hidden fixed inset-0 flex items-center justify-center bg-black/90 backdrop-blur-sm z-[200]" onclick="closeImageLightbox()">
+                <div class="relative max-w-7xl max-h-screen p-4">
+                    <button onclick="closeImageLightbox()" class="absolute -top-12 right-0 text-white hover:text-gray-300 text-4xl font-bold transition-colors">&times;</button>
+                    <img id="lightboxImage" src="#" class="max-w-full max-h-screen object-contain rounded-2xl shadow-2xl" onclick="event.stopPropagation()">
+                </div>
+            </div>
         </div>
     </div>
 
@@ -319,6 +326,19 @@
         function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
         function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
 
+                function openImageLightbox(src) {
+            if (src && src !== '#') {
+                document.getElementById('lightboxImage').src = src;
+                document.getElementById('imageLightbox').classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        function closeImageLightbox() {
+            document.getElementById('imageLightbox').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+        
         // Fungsi Reset & Error Handler Gambar
         function resetImageState(imgId) {
             const img = document.getElementById(imgId);
@@ -381,7 +401,11 @@
                 const preview = document.getElementById('editPreview');
                 preview.src = `/storage/${data.foto_bukti}`;
                 preview.classList.remove('hidden');
+                img.style.cursor = 'pointer';
+                img.onclick = () => openImageLightbox(img.src);
                 if(placeholder) placeholder.classList.add('hidden');
+            } else { 
+                img.classList.add('hidden'); 
             }
 
             // Logic wewenang form fields
@@ -427,6 +451,8 @@
                 const img = document.getElementById('preview_foto');
                 img.src = `/storage/${data.foto_bukti}`;
                 img.classList.remove('hidden');
+                img.style.cursor = 'pointer';
+                img.onclick = () => openImageLightbox(img.src);
             }
             document.getElementById('previewModal').classList.remove('hidden');
         }
