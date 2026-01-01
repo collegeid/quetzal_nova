@@ -1,5 +1,10 @@
 <x-app-layout>
-    <div class="py-12 min-h-screen bg-[#f8fafc]">
+    <div class="py-12 min-h-screen bg-[#f8fafc]" x-data="{ 
+        openCreate: false, 
+        openEdit: false, 
+        selected: null, 
+        formData: { name: '', username: '', email: '', role: '', password: '', password_confirmation: '' } 
+    }">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
             @if (session('success'))
@@ -396,11 +401,11 @@
                 const preview = document.getElementById('editPreview');
                 preview.src = `/storage/${data.foto_bukti}`;
                 preview.classList.remove('hidden');
-                img.style.cursor = 'pointer';
-                img.onclick = () => openImageLightbox(img.src);
+                preview.style.cursor = 'pointer';
+                preview.onclick = () => openImageLightbox(img.src);
                 if(placeholder) placeholder.classList.add('hidden');
             } else { 
-                img.classList.add('hidden'); 
+                preview.classList.add('hidden'); 
             }
 
             // Logic wewenang form fields
