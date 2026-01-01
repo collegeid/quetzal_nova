@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('lokasi_mesin');
             $table->string('jenis_cacat');
             $table->string('foto_bukti')->nullable();
+            
             $table->boolean('status_verifikasi')->default(false);
             $table->foreignId('id_user')->constrained('users', 'id')->onDelete('cascade');
             $table->foreignId('id_jenis')->constrained('jenis_cacat', 'id_jenis')->onDelete('cascade');

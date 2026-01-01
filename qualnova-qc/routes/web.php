@@ -45,7 +45,7 @@ Route::middleware(['auth'])->group(function () {
         //Pooling untuk Dahboard Realtime status
         Route::get('/dashboard/status-sistem', [DashboardController::class, 'statusSistemJson']);
        // CHart Tren
-        Route::get('/dashboard/chart-trend', [DashboardController::class, 'trendChart'])->name('dashboard.chartTrend');
+        Route::get('/dashboard/chart-trend', [DashboardController::class, 'tampilkanChart'])->name('dashboard.chartTrend');
 
         Route::get('/laporan/download', [LaporanController::class, 'downloadPdf'])->name('laporan.download');
 
