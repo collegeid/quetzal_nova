@@ -17,6 +17,7 @@ return new class extends Migration
             $table->integer('total_cacat');
             $table->string('jenis_cacat_terbanyak');
             $table->string('mesin_bermasalah');
+            
             $table->timestamps();
         });
         

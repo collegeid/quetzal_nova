@@ -14,12 +14,16 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('username')->unique(); // <── Tambahkan ini
+            $table->string('username')->unique(); 
+
             $table->string('email')->unique();
-            // database/migrations/xxxx_xx_xx_create_users_table.php
+
             $table->string('role')->default('qc');
+
             $table->timestamp('email_verified_at')->nullable();
+            
             $table->string('password');
+
             $table->rememberToken();
             $table->timestamps();
         });
